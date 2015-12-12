@@ -10,6 +10,7 @@
 #include "grouplistwidget.h"
 #include "grouplistwidget-private.h"
 #include "groupmodel.h"
+#include <QListView>
 
 class GrpTreeItem : public QTreeWidgetItem {
 public:
@@ -21,7 +22,7 @@ public:
         gtroup_index_ (idx)
     {
         QTreeWidgetItem * tvi = new QTreeWidgetItem (this);
-        tvi->set
+        // tvi->set
     }
 };
 
@@ -64,8 +65,16 @@ void GroupListWidget::setGroupModel (GroupModel *value)
     int i_max = value->groupCount();
 
     for (int i = 0; i < i_max; ++i) {
-        GrpTreeItem * tvi = new GrpTreeItem ();
+        GrpTreeItem * tvi = new GrpTreeItem (value->groupLabel (i), i);
         addTopLevelItem (tvi);
+        QTreeWidgetItem * subtvi = new QTreeWidgetItem (this);
+        // tvi->set
+        QListView * lv = new QListView ();
+        lv->setViewMode (QListView::IconMode);
+        lv->setResizeMode (QListView::Adjust);
+        lv->setMovement (QListView::Static);
+        lv->setModel (value->groupList (i));
+        setItemWidget (subtvi, 0, lv);
     }
 }
 /* ========================================================================= */

@@ -34,6 +34,9 @@ internal model is created for each group.
 The internal model simply keeps a map between its own rows
 and the rows of the sorted model.
 
+http://stackoverflow.com/questions/21676444/does-qlistwidget-support-grouping
+http://stackoverflow.com/questions/3639468/what-qt-widgets-to-use-for-read-only-scrollable-collapsible-icon-list
+
 ?
 Internal model also maps columns to user roles as the
 list only allows a single column.

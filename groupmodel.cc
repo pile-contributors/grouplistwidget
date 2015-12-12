@@ -9,6 +9,7 @@
 
 #include "grouplistwidget.h"
 #include "groupmodel.h"
+#include "groupcustomizer.h"
 #include "grouplistwidget-private.h"
 
 #include <QAbstractListModel>
@@ -127,7 +128,7 @@ GroupModel::GroupModel(QObject * parent) :
     groups_()
 {
     GROUPLISTWIDGET_TRACE_ENTRY;
-    sourceModelChanged();
+    // sourceModelChanged ();
     GROUPLISTWIDGET_TRACE_EXIT;
 }
 /* ========================================================================= */
@@ -160,12 +161,32 @@ void GroupModel::setSourceModel (QAbstractItemModel *source_model)
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
-QAbstractListModel *GroupModel::listForGroup (int idx) const
+QAbstractListModel *GroupModel::groupList (int idx) const
 {
     if ((idx < 0) || (idx >= groups_.count())) {
         return NULL;
     }
     return groups_.at (idx);
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+QString GroupModel::groupLabel (int idx) const
+{
+    if ((idx < 0) || (idx >= groups_.count())) {
+        return QString ();
+    }
+    return groups_.at (idx)->label();
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+QString GroupModel::groupName (int idx) const
+{
+    if ((idx < 0) || (idx >= groups_.count())) {
+        return QString ();
+    }
+    return groups_.at (idx)->name();
 }
 /* ========================================================================= */
 
@@ -187,6 +208,7 @@ GrouSubModel *GroupModel::subModelByName (const QString &s_name) const
             return itr;
         }
     }
+    return NULL;
 }
 /* ========================================================================= */
 
@@ -200,6 +222,7 @@ int GroupModel::subIndexByName (const QString &s_name) const
         }
         ++i;
     }
+    return -1;
 }
 /* ========================================================================= */
 
@@ -217,7 +240,7 @@ void GroupModel::buildAllGroups ()
         QString s_name = cust_->name (midx);
         GrouSubModel * subm = subModelByName (s_name);
         if (subm == NULL) {
-            GrouSubModel * subm = new GrouSubModel (s_name);
+            GrouSubModel * subm = new GrouSubModel (this, s_name);
             subm->setLabel (cust_->label (midx, s_name));
         }
 

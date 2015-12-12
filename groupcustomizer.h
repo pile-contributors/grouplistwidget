@@ -16,7 +16,7 @@ QT_BEGIN_NAMESPACE
 class QModelIndex;
 QT_END_NAMESPACE
 
-class GrouModel;
+class GroupModel;
 
 //! Allows user to customize parts of the GroupModel.
 class GROUPLISTWIDGET_EXPORT GroupCustomizer {
@@ -24,7 +24,7 @@ class GROUPLISTWIDGET_EXPORT GroupCustomizer {
 public:
 
     //! Constructor.
-    GroupCustomizer (GrouModel * target) : m_(target) {}
+    GroupCustomizer (GroupModel * target) : m_(target) {}
 
     //! Destructor.
     virtual ~GroupCustomizer () {}
@@ -42,7 +42,7 @@ public:
 
 
 private:
-    GrouModel * m_;
+    GroupModel * m_;
 }; // class GroupCustomizer
 
 #endif // GUARD_GROUPCUSTOMIZER_H_INCLUDE

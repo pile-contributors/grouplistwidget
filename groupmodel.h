@@ -45,11 +45,6 @@ public:
     void setSourceModel (
             QAbstractItemModel * source_model) Q_DECL_OVERRIDE;
 
-    //! The model to be used with a list for a group
-    QAbstractListModel *
-    listForGroup (
-        int idx) const;
-
     //! Retreive index of the column used for grouping.
     inline int
     groupingCol () const {
@@ -94,7 +89,7 @@ public:
 
     //! Take ownership of the object that customizes the behaviour of this class.
     inline GroupCustomizer *
-    takeCustomizer () const {
+    takeCustomizer () {
         GroupCustomizer * result = cust_;
         cust_ = NULL;
         return result;
@@ -105,6 +100,20 @@ public:
     setCustomizer (
             GroupCustomizer * value);
 
+    //! Label for the group with given index.
+    QString
+    groupLabel (
+            int idx) const;
+
+    //! Label for the group with given index.
+    QString
+    groupName (
+            int idx) const;
+
+    //! The model to be used with a list for a group
+    QAbstractListModel *
+    groupList (
+        int idx) const;
 
 protected:
 
@@ -132,7 +141,7 @@ private:
     int col_image_large_; /**< the index of the column provinding the large image */
     int col_image_small_; /**< the index of the column provinding the small image */
     QList<GrouSubModel*> groups_; /**< the list of groups */
-    GroupCustomizer * cust_; /**< object used to customize
+    GroupCustomizer * cust_; /**< object used to customize */
 
 }; // class GroupModel
 
