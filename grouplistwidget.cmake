@@ -18,9 +18,15 @@ macro    (grouplistwidgetInit
 
     # compose the list of headers and sources
     set(GROUPLISTWIDGET_HEADERS
+        "groupmodel.h"
+        "groupcustomizer.h"
         "grouplistwidget.h")
     set(GROUPLISTWIDGET_SOURCES
+        "groupmodel.cc"
+        "groupcustomizer.cc"
         "grouplistwidget.cc")
+    set(GROUPLISTWIDGET_QT_MODS
+        Core Widgets)
 
     pileSetSources(
         "${GROUPLISTWIDGET_INIT_NAME}"

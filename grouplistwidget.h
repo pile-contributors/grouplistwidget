@@ -11,22 +11,32 @@
 #define GUARD_GROUPLISTWIDGET_H_INCLUDE
 
 #include <grouplistwidget/grouplistwidget-config.h>
+#include <QTreeWidget>
 
-//! brief description
-class GROUPLISTWIDGET_EXPORT GroupListWidget {
+class GroupModel;
+
+//! A listview that can group the items.
+class GROUPLISTWIDGET_EXPORT GroupListWidget : public QTreeWidget {
 
 public:
 
     //! Default constructor.
-    GroupListWidget ();
+    GroupListWidget (
+            QWidget *parent = NULL);
 
     //! Destructor.
     virtual ~GroupListWidget();
 
+    //! Assign a model.
+    void
+    setGroupModel (
+            GroupModel * value);
+
+
 protected:
 
 private:
-
+    GroupModel * m_;
 };
 
 #endif // GUARD_GROUPLISTWIDGET_H_INCLUDE

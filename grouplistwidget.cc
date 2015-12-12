@@ -9,18 +9,35 @@
 
 #include "grouplistwidget.h"
 #include "grouplistwidget-private.h"
+#include "groupmodel.h"
+
+class GrpTreeItem : public QTreeWidgetItem {
+public:
+    int gtroup_index_;
+
+
+    GrpTreeItem (const QString & s_name, int idx) :
+        QTreeWidgetItem (QStringList () << s_name ),
+        gtroup_index_ (idx)
+    {
+        QTreeWidgetItem * tvi = new QTreeWidgetItem (this);
+        tvi->set
+    }
+};
+
 
 /**
  * @class GroupListWidget
  *
- * Detailed description.
+ * A list of items with grouping.
  */
 
 /* ------------------------------------------------------------------------- */
 /**
  * Detailed description for constructor.
  */
-GroupListWidget::GroupListWidget()
+GroupListWidget::GroupListWidget (QWidget *parent) :
+    QTreeWidget (parent)
 {
     GROUPLISTWIDGET_TRACE_ENTRY;
 
@@ -37,5 +54,18 @@ GroupListWidget::~GroupListWidget()
     GROUPLISTWIDGET_TRACE_ENTRY;
 
     GROUPLISTWIDGET_TRACE_EXIT;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+void GroupListWidget::setGroupModel (GroupModel *value)
+{
+    clear ();
+    int i_max = value->groupCount();
+
+    for (int i = 0; i < i_max; ++i) {
+        GrpTreeItem * tvi = new GrpTreeItem ();
+        addTopLevelItem (tvi);
+    }
 }
 /* ========================================================================= */
