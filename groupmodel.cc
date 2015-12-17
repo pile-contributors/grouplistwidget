@@ -16,6 +16,7 @@
 
 #include <assert.h>
 
+//! The model used with individual list widgets inside the tree.
 class GrouSubModel : public QAbstractListModel  {
     Q_OBJECT
 
