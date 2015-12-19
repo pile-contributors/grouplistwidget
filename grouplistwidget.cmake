@@ -19,10 +19,12 @@ macro    (grouplistwidgetInit
     # compose the list of headers and sources
     set(GROUPLISTWIDGET_HEADERS
         "groupmodel.h"
+        "grouplistdelegate.h"
         "groupcustomizer.h"
         "grouplistwidget.h")
     set(GROUPLISTWIDGET_SOURCES
         "groupmodel.cc"
+        "grouplistdelegate.cc"
         "groupcustomizer.cc"
         "grouplistwidget.cc")
     set(GROUPLISTWIDGET_QT_MODS
