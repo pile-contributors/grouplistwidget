@@ -34,4 +34,8 @@
 static inline void black_hole (...)
 {}
 
+
+
+
+
 #endif // GUARD_GROUPLISTWIDGET_PRIVATE_H_INCLUDE

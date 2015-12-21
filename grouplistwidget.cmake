@@ -20,12 +20,14 @@ macro    (grouplistwidgetInit
     set(GROUPLISTWIDGET_HEADERS
         "groupmodel.h"
         "grouplistdelegate.h"
-        "groupcustomizer.h"
+        "groupsubmodel.h"
+        "grouplistgroup.h"
         "grouplistwidget.h")
     set(GROUPLISTWIDGET_SOURCES
         "groupmodel.cc"
         "grouplistdelegate.cc"
-        "groupcustomizer.cc"
+        "groupsubmodel.cc"
+        "grouplistgroup.cc"
         "grouplistwidget.cc")
     set(GROUPLISTWIDGET_QT_MODS
         Core Widgets)
