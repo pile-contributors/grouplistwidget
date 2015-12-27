@@ -11,6 +11,7 @@
 #include "groupmodel.h"
 #include "groupsubmodel.h"
 #include "grouplistgroup.h"
+#include "grouplistdelegate.h"
 
 #include "grouplistwidget-private.h"
 
@@ -20,6 +21,7 @@
 #include <QContextMenuEvent>
 #include <QStyledItemDelegate>
 #include <QFontMetrics>
+#include <QWheelEvent>
 
 
 #define GEN_SLOT_FUN "gsfunction"
@@ -373,6 +375,9 @@ void GroupListWidget::setListDelegate (QAbstractItemDelegate *value)
         delete list_delegate_;
     }
     list_delegate_ = value;
+
+    reinitDelegate ();
+
     if (m_->baseModel() != NULL) {
         // update lists currently visible
         int i_max = topLevelItemCount();
@@ -409,6 +414,7 @@ void GroupListWidget::setViewMode (QListView::ViewMode value)
     if (list_view_mode_ == value)
         return;
     list_view_mode_ = value;
+    reinitDelegate ();
     if (m_->baseModel() != NULL) {
         // update lists currently visible
         int i_max = topLevelItemCount();
@@ -428,6 +434,7 @@ void GroupListWidget::setFlow (QListView::Flow value)
     if (list_flow_ == value)
         return;
     list_flow_ = value;
+    reinitDelegate ();
     if (m_->baseModel() != NULL) {
         // update lists currently visible
         int i_max = topLevelItemCount();
@@ -445,8 +452,14 @@ void GroupListWidget::setFlow (QListView::Flow value)
 QSize GroupListWidget::gridCellFromDelegate (
         QAbstractItemDelegate * delegate, QStyleOptionViewItem & option) const
 {
-    QModelIndex midx;
-    return delegate->sizeHint (option, midx);
+    GroupListDelegate * our_del =
+            qobject_cast<GroupListDelegate*>(list_delegate_);
+    if (our_del != NULL) {
+        return our_del->gridCell();
+    } else {
+        QModelIndex midx;
+        return delegate->sizeHint (option, midx);
+    }
 }
 /* ========================================================================= */
 
@@ -495,6 +508,31 @@ void GroupListWidget::setPixmapSize (int value)
         return;
     pixmap_size_ = value;
     grid_cell_ = computeGridCell ();
+
+
+    reinitDelegate ();
+    arangeLists ();
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+void GroupListWidget::reinitDelegate ()
+{
+    // if the delegate is our own kind of delegate, ask it to compute
+    // and cache display values
+    GroupListDelegate * our_del =
+            qobject_cast<GroupListDelegate*>(list_delegate_);
+    if (our_del != NULL) {
+        our_del->reinit (this, underModel());
+        int i_max = topLevelItemCount();
+        QSize sz = our_del->gridCell ();
+        for (int i = 0; i < i_max; ++i) {
+            GrpTreeItem * it = static_cast<GrpTreeItem *>(topLevelItem (i));
+            //GroupSubModel * subm = static_cast<GroupSubModel *>(it->lv_->model());
+            //subm->signalReset ();
+            it->lv_->setGridSize (sz);
+        }
+    }
 }
 /* ========================================================================= */
 
@@ -527,6 +565,7 @@ void GroupListWidget::underModelAboutToBeReset()
 /* ------------------------------------------------------------------------- */
 void GroupListWidget::underModelReset()
 {
+    reinitDelegate ();
     recreateFromGroup ();
 }
 /* ========================================================================= */
@@ -632,6 +671,26 @@ void GroupListWidget::resizeEvent (QResizeEvent *e)
 
     e->accept();
     resize_guard_ = false;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+void GroupListWidget::wheelEvent (QWheelEvent * event)
+{
+    if ((event->modifiers () & Qt::ControlModifier) == Qt::ControlModifier) {
+        int d = event->delta() / 120;
+        while (d > 0) {
+            increasePixSize();
+            --d;
+        }
+        while (d < 0) {
+            decreasePixSize();
+            ++d;
+        }
+        event->accept();
+        return;
+    }
+    QTreeWidget::wheelEvent (event);
 }
 /* ========================================================================= */
 
@@ -743,6 +802,7 @@ void GroupListWidget::installUnderModel (GroupModel *value)
         connect (value, &GroupModel::groupingChanged,
                  this, &GroupListWidget::underGroupingChanged);
     }
+    reinitDelegate ();
     m_ = value;
     GROUPLISTWIDGET_TRACE_EXIT;
 }

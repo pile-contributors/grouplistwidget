@@ -26,6 +26,8 @@ class GROUPLISTWIDGET_EXPORT GroupSubModel : public QAbstractListModel {
     Q_OBJECT
 
     friend class GroupModel;
+    friend class GroupListWidget;
+
 public:
 
     //! Default constructor.

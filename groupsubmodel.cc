@@ -14,6 +14,7 @@
 #include <QAbstractItemModel>
 #include <QList>
 #include <QVariant>
+#include <QSize>
 
 /**
  * @class GroupSubModel
@@ -212,14 +213,27 @@ QVariant GroupSubModel::data (const QModelIndex &index, int role) const
     r = mapRowToBaseModel (r);
 
     int c = index.column();
-    if ((index.column() == 0) && (role == Qt::DecorationRole)) {
-        // the icon
-        c = m_->pixmapColumn();
-        if (c == -1) {
-            // all images are off
-            return QVariant();
+    if (index.column() == 0) {
+        if (role == Qt::DecorationRole) {
+            // the icon
+            c = m_->pixmapColumn();
+            if (c == -1) {
+                // all images are off
+                return QVariant();
+            }
+            role = m_->pixmapRole();
+        } /*else if (role == Qt::SizeHintRole) {
+            return QSize(60, 20);
+        }*/ else if (role >= GroupModel::BaseColRole) {
+            c = role - GroupModel::BaseColRole;
+            if (c >= m_->labelCount()) {
+                return QVariant();
+            }
+
+            ModelId mid = m_->label (c);
+            c = mid.column ();
+            role = mid.role ();
         }
-        role = m_->pixmapRole();
     }
     return m_->baseModel()->index (r, c).data (role);
 }

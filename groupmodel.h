@@ -36,6 +36,9 @@ class GROUPLISTWIDGET_EXPORT GroupModel : public QObject {
     Q_OBJECT
 public:
 
+
+    enum { BaseColRole = Qt::UserRole + 1000 };
+
     //! The result of comparing two values.
     enum ComparisionReslt {
         Equal = 0,
@@ -199,7 +202,7 @@ public:
     //! Add the column and role for a label to be presented to the user.
     void
     addlabel (
-            int column, Qt::ItemDataRole role) {
+            int column, Qt::ItemDataRole role = Qt::DisplayRole) {
         addlabel (ModelId (column, role));
     }
 
@@ -229,7 +232,7 @@ public:
     void
     setLabel (
             int column,
-            Qt::ItemDataRole role,
+            Qt::ItemDataRole role = Qt::DisplayRole,
             int idx = 0) {
         setLabel (ModelId (column, role), idx);
     }

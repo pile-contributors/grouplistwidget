@@ -13,9 +13,24 @@
 #include <grouplistwidget/grouplistwidget-config.h>
 #include <QObject>
 #include <QAbstractItemDelegate>
+#include <QStyledItemDelegate>
+
+class GroupListWidget;
+class GroupModel;
 
 //! Allows user to customize parts of the GroupModel.
-class GROUPLISTWIDGET_EXPORT GroupListDelegate : public QAbstractItemDelegate {
+class GROUPLISTWIDGET_EXPORT GroupListDelegate : public QStyledItemDelegate/* QAbstractItemDelegate */ {
+    Q_OBJECT
+public:
+
+    enum Layout {
+        LayInvalid = -1,
+
+        LayIcon, /**< Icon at the top, text at the bottom */
+        LayList, /**< Icon at left side, text at right */
+
+        Laymax
+    };
 
 public:
 
@@ -26,8 +41,20 @@ public:
     //! Destructor.
     virtual ~GroupListDelegate () {}
 
+    //! compute cached values
+    virtual void
+    reinit (
+            GroupListWidget * lwidget,
+            GroupModel * umodel);
+
+    //! Get the size of the cell.
+    QSize
+    gridCell () const {
+        return item_size_;
+    }
+
 protected:
-#if 0
+
     void
     paint (
             QPainter * painter,
@@ -38,10 +65,14 @@ protected:
     sizeHint (
             const QStyleOptionViewItem & option,
             const QModelIndex & index ) const;
-#endif
+
 
 private:
-
+    QSize item_size_; /**< cached size of the entire item */
+    QRect pix_pos_; /**< the position of the pixmap inside the item rect */
+    QRect text_pos_; /**< the position of the first label inside the item rect */
+    Layout layout_; /**< the way internal components are arranged */
+    int lay_count_; /**< the number of labels to show */
 
 }; // class GroupListDelegate
 

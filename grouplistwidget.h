@@ -209,8 +209,6 @@ private slots:
     void
     genericSlot ();
 
-
-
 protected:
 
     //! Implement a default contextual menu.
@@ -222,6 +220,11 @@ protected:
     void
     resizeEvent (
             QResizeEvent *e);
+
+    //! Change the size of the image using the wheels.
+    void
+    wheelEvent (
+            QWheelEvent *);
 
 private:
 
@@ -258,10 +261,16 @@ private:
     void
     arangeLists ();
 
+    //! Let the dekegate cache geometry.
+    void
+    reinitDelegate ();
+
     QSize
     gridCellFromDelegate (
             QAbstractItemDelegate *delegate,
             QStyleOptionViewItem & option) const;
+
+
 
     GroupModel * m_; /**< the underlying model */
     bool resize_guard_; /**< is it ok to react to resize? */
