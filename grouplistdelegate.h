@@ -27,7 +27,7 @@ public:
     virtual ~GroupListDelegate () {}
 
 protected:
-
+#if 0
     void
     paint (
             QPainter * painter,
@@ -38,7 +38,7 @@ protected:
     sizeHint (
             const QStyleOptionViewItem & option,
             const QModelIndex & index ) const;
-
+#endif
 
 private:
 

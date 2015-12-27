@@ -41,7 +41,7 @@ GroupListDelegate::GroupListDelegate (QObject * parent) :
 
 }
 /* ========================================================================= */
-
+#if 0
 /* ------------------------------------------------------------------------- */
 void GroupListDelegate::paint (
         QPainter * painter, const QStyleOptionViewItem & option,
@@ -54,20 +54,7 @@ void GroupListDelegate::paint (
     }
 
     if (!option.icon.isNull()) {
-        switch (option.decorationPosition) {
-        case QStyleOptionViewItem::Right:
-        case QStyleOptionViewItem::Left: {
-            // image is placed on same level as the label
-            return QSize (GEN_BORDER + pix_sz + DECO_TEXT_BORDER + qMax(pix_sz, 64) + GEN_BORDER,
-                          qMax(GEN_BORDER + pix_sz + GEN_BORDER, lbl_h));
-        break; }
-        case QStyleOptionViewItem::Bottom:
-        case QStyleOptionViewItem::Top: {
-            // image is placed on top or below the label
-            return QSize (qMax (GEN_BORDER + pix_sz + GEN_BORDER, 64),
-                          GEN_BORDER + pix_sz + DECO_TEXT_BORDER + lbl_h + GEN_BORDER);
-        break; }
-        }
+
     }
 
 
@@ -173,3 +160,4 @@ QSize GroupListDelegate::sizeHint (
     // return QSize (64, 64);
 }
 /* ========================================================================= */
+#endif
