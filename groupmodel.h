@@ -13,6 +13,7 @@
 #include <QVariant>
 #include <QList>
 #include <QObject>
+#include <QVector>
 
 QT_BEGIN_NAMESPACE
 class QAbstractItemModel;
@@ -193,7 +194,7 @@ public:
 
     //! Add the column and role for an additional label to be presented to the user.
     void
-    addlabel (
+    addLabel (
             const ModelId & value) {
         additional_labels_.append (value);
         resetAllSubGroups ();
@@ -201,9 +202,9 @@ public:
 
     //! Add the column and role for a label to be presented to the user.
     void
-    addlabel (
+    addLabel (
             int column, Qt::ItemDataRole role = Qt::DisplayRole) {
-        addlabel (ModelId (column, role));
+        addLabel (ModelId (column, role));
     }
 
     //! Set the column and role for main label.
@@ -522,8 +523,32 @@ signals:
     /*  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  */
 
 
+private slots:
+
+    void
+    baseModelDataChange (
+            const QModelIndex &topLeft,
+            const QModelIndex &bottomRight,
+            const QVector<int> &roles = QVector<int>());
 
 private:
+
+    //! Install a base model inside this instance.
+    void
+    installBaseModel (
+            QAbstractItemModel * value);
+
+    //! Uninstall current base model from this instance.
+    void
+    uninstallBaseModel (
+            bool do_delete = true);
+
+    //! Find the group that hosts a base model row; this is slow.
+    GroupSubModel *
+    groupFromBaseRow (
+            int base_row,
+            int * index_in_group);
+
 
     QAbstractItemModel * m_base_; /**< the user model */
 

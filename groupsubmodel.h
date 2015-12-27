@@ -103,6 +103,7 @@ public:
     void
     performUnsorting ();
 
+    //! Number of rows.
     int
     rowCount (
             const QModelIndex &parent = QModelIndex()) const
@@ -126,6 +127,12 @@ public:
     mapRowToBaseModel (
             int row) const;
 
+    //! Maps rows in this model to rows in base model.
+    const QList<int> &
+    mapping () const {
+        return map_;
+    }
+
 protected:
 
     void
@@ -136,6 +143,12 @@ protected:
             int value) {
         list_index_ = value;
     }
+
+    //! Will emit dataChange for this row.
+    void
+    baseModelDataChange (
+            int index_in_group,
+            const QVector<int> &roles);
 
 private:
     GroupModel * m_; /**< the parent model */

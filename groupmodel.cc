@@ -95,10 +95,7 @@ GroupModel::GroupModel (QAbstractItemModel * model, QObject * parent) :
 GroupModel::~GroupModel()
 {
     GROUPLISTWIDGET_TRACE_ENTRY;
-    clearAllGroups ();
-    if (baseModel () != NULL) {
-        delete baseModel ();
-    }
+    uninstallBaseModel();
     GROUPLISTWIDGET_TRACE_EXIT;
 }
 /* ========================================================================= */
@@ -129,13 +126,13 @@ void GroupModel::setBaseModel (
     emit modelAboutToBeReset();
     supress_signals_ = true;
 
-    m_base_ = model;
+    installBaseModel (model);
+
     group_.setColumn (grouping_col);
     sort_.setColumn (sorting_col);
     group_dir_ = group_dir;
     sort_dir_ = sort_dir;
 
-    clearAllGroups ();
     if (baseModel () != NULL) {
         if (group_.column () != -1)
             buildAllGroups ();
@@ -172,10 +169,95 @@ QAbstractItemModel * GroupModel::takeBaseModel ()
     GROUPLISTWIDGET_TRACE_ENTRY;
 
     QAbstractItemModel * tmp = baseModel ();
-    m_base_ = NULL;
+    uninstallBaseModel (false);
 
     GROUPLISTWIDGET_TRACE_EXIT;
     return tmp;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+void GroupModel::installBaseModel (QAbstractItemModel * value)
+{
+    uninstallBaseModel ();
+
+    if (value != NULL) {
+        connect (value, &QAbstractItemModel::modelAboutToBeReset,
+                 this, &GroupModel::modelAboutToBeReset);
+        connect (value, &QAbstractItemModel::modelReset,
+                 this, &GroupModel::modelReset);
+        connect (value, &QAbstractItemModel::dataChanged,
+                 this, &GroupModel::baseModelDataChange);
+    }
+
+    m_base_ = value;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+void GroupModel::uninstallBaseModel (bool do_delete)
+{
+    clearAllGroups ();
+    if (m_base_ != NULL) {
+        disconnect (m_base_, &QAbstractItemModel::modelAboutToBeReset,
+                    this, &GroupModel::modelAboutToBeReset);
+        disconnect (m_base_, &QAbstractItemModel::modelReset,
+                    this, &GroupModel::modelReset);
+        disconnect (m_base_, &QAbstractItemModel::dataChanged,
+                    this, &GroupModel::baseModelDataChange);
+
+        if (do_delete)
+            delete m_base_;
+    }
+
+    m_base_ = NULL;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+void GroupModel::baseModelDataChange (
+        const QModelIndex &topLeft, const QModelIndex &bottomRight,
+        const QVector<int> &roles)
+{
+    GROUPLISTWIDGET_TRACE_ENTRY;
+    if (groups_.count() > 0) {
+        int i = qMin (topLeft.row(), bottomRight.row());
+        int i_max = i + qAbs (topLeft.row() - bottomRight.row()) + 1;
+        for (; i < i_max; ++i) {
+            int index_in_group = -1;
+            GroupSubModel * grp = groupFromBaseRow (i, &index_in_group);
+            if (grp == NULL) {
+                GROUPLISTWIDGET_DEBUGM(
+                            "Received word that row %d changed in "
+                            "base model but it was not found in groups\n",
+                            i);
+            } else {
+                grp->baseModelDataChange (
+                            index_in_group, roles);
+            }
+        }
+    }
+    GROUPLISTWIDGET_TRACE_EXIT;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+GroupSubModel * GroupModel::groupFromBaseRow (int base_row, int * index_in_group)
+{
+    foreach(GroupSubModel * subm, groups_) {
+        int idx = subm->mapping ().indexOf (base_row);
+        if (idx != -1) {
+            if (index_in_group != NULL) {
+                if (sort_dir_ == Qt::AscendingOrder) {
+                    *index_in_group = idx;
+                } else {
+                    *index_in_group = subm->rowCount() - idx - 1;
+                }
+            }
+            return subm;
+        }
+    }
+    return NULL;
 }
 /* ========================================================================= */
 

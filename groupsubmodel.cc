@@ -290,3 +290,12 @@ void GroupSubModel::signalReset()
     endResetModel();
 }
 /* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+void GroupSubModel::baseModelDataChange (
+        int index_in_group, const QVector<int> &roles)
+{
+    QModelIndex idx = index (index_in_group, 0);
+    emit dataChanged (idx, idx, roles);
+}
+/* ========================================================================= */
