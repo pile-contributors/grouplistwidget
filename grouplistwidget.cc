@@ -322,12 +322,12 @@ void GroupListWidget::appendSortToMenu (QMenu *menu)
                 crt_sort, SLOT(setSortingColumnByProperty()));
 
     QAction * act_srt_asc = msort->addAction (
-                tr ("Top to Bottom"), m_, SLOT(setSortingAscending()));
+                tr ("Ascending"), m_, SLOT(setSortingAscending()));
     act_srt_asc->setCheckable (true);
     act_srt_asc->setChecked (m_->sortingDirection() == Qt::AscendingOrder);
 
     QAction * act_srt_desc = msort->addAction (
-                tr ("Left to Right"), m_, SLOT(setSortingDescending()));
+                tr ("Descending"), m_, SLOT(setSortingDescending()));
     act_srt_desc->setCheckable (true);
     act_srt_desc->setChecked (m_->sortingDirection() == Qt::DescendingOrder);
 
