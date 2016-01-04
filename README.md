@@ -93,4 +93,7 @@ GroupListDelegate
 -----------------
 
 Some functionality requires the use of an advanced delegate for items that
-are part of the list.
+are part of the list. Under this delegate the geometry of the items
+is constant (all items have same size). The delegate caches the
+elements defining the geometry and, thus, a delegate should only be used
+for a single view.
