@@ -73,7 +73,7 @@ public:
             Qt::SortOrder group_dir = Qt::AscendingOrder,
             Qt::SortOrder sort_dir = Qt::AscendingOrder);
 
-    //! Retreive user model.
+    //! Retrieve user model.
     virtual QAbstractItemModel *
     baseModel () const;
 
@@ -86,7 +86,7 @@ public:
     setPixmapColumn (
             int column);
 
-    //! Retreive the column in base model that provides the image for the icon.
+    //! Retrieve the column in base model that provides the image for the icon.
     virtual int
     pixmapColumn () const;
 
@@ -95,11 +95,11 @@ public:
     setPixmapRole (
             Qt::ItemDataRole role);
 
-    //! Retreive the role in base model that provides the image for the icon.
+    //! Retrieve the role in base model that provides the image for the icon.
     virtual Qt::ItemDataRole
     pixmapRole () const;
 
-    //! Retreive the pixmap for a particular row.
+    //! Retrieve the pixmap for a particular row.
     virtual QPixmap
     pixmap (
             int row) const;
@@ -112,7 +112,7 @@ public:
         user_data_ = value;
     }
 
-    //! Retreive the opaque data useful for the user.
+    //! Retrieve the opaque data useful for the user.
     virtual const QVariant &
     userData () const {
         return user_data_;
@@ -251,7 +251,7 @@ public:
 
 public:
 
-    //! Retreive the column in base model that decides grouping.
+    //! Retrieve the column in base model that decides grouping.
     virtual int
     groupingColumn () const {
         return group_.column ();
@@ -270,7 +270,7 @@ public:
         group_.setRole (role);
     }
 
-    //! Retreive the role in base model that decides grouping.
+    //! Retrieve the role in base model that decides grouping.
     virtual Qt::ItemDataRole
     groupingRole () const {
         return group_.role ();
@@ -283,13 +283,13 @@ public:
         group_label_role_ = role;
     }
 
-    //! Retreive the role in base model that provides group label.
+    //! Retrieve the role in base model that provides group label.
     virtual Qt::ItemDataRole
     groupLabelRole () const {
         return group_label_role_;
     }
 
-    //! Retreive the direction of grouping.
+    //! Retrieve the direction of grouping.
     virtual Qt::SortOrder
     groupingDirection () const {
         return group_dir_;
@@ -304,7 +304,7 @@ public:
         group_func_ = value;
     }
 
-    //! Retreive the function used to assign records to groups.
+    //! Retrieve the function used to assign records to groups.
     virtual Compare
     groupingFunc () const {
         return group_func_;
@@ -321,11 +321,11 @@ public:
         return groups_.count();
     }
 
-    //! Retreive the list of columns where grouping can be applied.
+    //! Retrieve the list of columns where grouping can be applied.
     virtual QList<int>
     groupingColumns () const;
 
-    //! Retreive the labels for all columns where grouping can be applied.
+    //! Retrieve the labels for all columns where grouping can be applied.
     virtual QStringList
     groupingColumnLabels (
             int * idx_crt) const;
@@ -407,7 +407,7 @@ signals:
 
 public:
 
-    //! Retreive the column in base model that decides sorting.
+    //! Retrieve the column in base model that decides sorting.
     virtual int
     sortingColumn () const {
         return sort_.column();
@@ -428,14 +428,14 @@ public:
             emit sortingChanged (sort_.column(), sort_dir_);
     }
 
-    //! Retreive the role in base model that decides sorting.
+    //! Retrieve the role in base model that decides sorting.
     virtual Qt::ItemDataRole
     sortingRole () const {
         return sort_.role ();
     }
 
 
-    //! Retreive the direction of sorting.
+    //! Retrieve the direction of sorting.
     virtual Qt::SortOrder
     sortingDirection () const {
         return sort_dir_;
@@ -450,17 +450,17 @@ public:
         sort_func_ = value;
     }
 
-    //! Retreive the function used to sort records inside groups.
+    //! Retrieve the function used to sort records inside groups.
     virtual Compare
     sortingFunc () const {
         return sort_func_;
     }
 
-    //! Retreive the list of columns where sorting can be applied.
+    //! Retrieve the list of columns where sorting can be applied.
     virtual QList<int>
     sortingColumns () const;
 
-    //! Retreive the labels for all columns where sorting can be applied.
+    //! Retrieve the labels for all columns where sorting can be applied.
     virtual QStringList
     sortingColumnLabels (
             int * idx_crt) const;
@@ -569,6 +569,8 @@ private:
     bool supress_signals_; /**< do we generate signals or not */
 
     QList<ModelId> additional_labels_; /**< labels to be presented */
+
+public: virtual void anchorVtable() const;
 }; // class GroupModel
 
 #endif // GUARD_GROUPMODEL_H_INCLUDE

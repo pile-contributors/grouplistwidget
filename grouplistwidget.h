@@ -32,7 +32,7 @@ class GROUPLISTWIDGET_EXPORT GroupListWidget : public QTreeWidget {
 public:
 
     //! Default constructor.
-    GroupListWidget (
+    explicit GroupListWidget (
             QWidget *parent = NULL);
 
     //! Destructor.
@@ -43,7 +43,7 @@ public:
     setBaseModel (
             QAbstractItemModel * model);
 
-    //! Retreive user model from underlying model.
+    //! Retrieve user model from underlying model.
     QAbstractItemModel *
     baseModel () const;
 
@@ -52,7 +52,7 @@ public:
     setUnderModel (
             GroupModel * model);
 
-    //! Retreive underlying model.
+    //! Retrieve underlying model.
     GroupModel *
     underModel () const {
         return m_;

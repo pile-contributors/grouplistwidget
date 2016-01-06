@@ -54,7 +54,9 @@ public:
         gsm_(gsm)
     {
     }
+public: virtual void anchorVtable() const;
 };
+void GrpTreeItem::anchorVtable() const {}
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
@@ -77,8 +79,8 @@ public:
     QSize sizeHint (
             const QStyleOptionViewItem &option, const QModelIndex &index) const
     {
-        for (;;) {
-            break;
+        /*for (;;) {
+
             if (!index.isValid())
                 break;
             GroupListWidget * tv = glw();
@@ -86,7 +88,7 @@ public:
             if (w == NULL)
                 break;
             return w->size();
-        }
+        }*/
 
         if (prev_ != NULL) {
             return prev_->sizeHint (option, index);
@@ -104,7 +106,9 @@ public:
         }
     }
 
+public: virtual void anchorVtable() const;
 };
+void GrpTreeDeleg::anchorVtable() const {}
 /* ========================================================================= */
 
 
@@ -829,3 +833,5 @@ void GroupListWidget::uninstallUnderModel (bool b_delete)
     GROUPLISTWIDGET_TRACE_EXIT;
 }
 /* ========================================================================= */
+
+

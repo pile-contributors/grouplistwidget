@@ -833,3 +833,5 @@ GroupModel::ComparisionReslt GroupModel::defaultCompare (
     return Equal;
 }
 /* ========================================================================= */
+
+void GroupModel::anchorVtable () const {}

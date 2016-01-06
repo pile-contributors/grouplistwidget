@@ -39,7 +39,7 @@ public:
     //! Destructor.
     virtual ~GroupSubModel();
 
-    //! Retreive the index of this model inside the main model.
+    //! Retrieve the index of this model inside the main model.
     int
     listIndex () const;
 
@@ -50,7 +50,7 @@ public:
         m_ = model;
     }
 
-    //! Retreive the parent model.
+    //! Retrieve the parent model.
     GroupModel *
     parentModel () const {
         return m_;
@@ -76,7 +76,7 @@ public:
         key_ = value;
     }
 
-    //! Retreive the key for the grouping algorithm.
+    //! Retrieve the key for the grouping algorithm.
     virtual const QVariant &
     groupKey () const {
         return key_;
@@ -89,7 +89,7 @@ public:
         s_label_ = value;
     }
 
-    //! Retreive the user visible label for this group.
+    //! Retrieve the user visible label for this group.
     virtual const QString &
     label () const {
         return s_label_;
@@ -156,6 +156,8 @@ private:
     QVariant key_; /**< the key for the grouping algorithm */
     QString s_label_; /**< the user visible label for this group */
     int list_index_; /**< index of this model within main model */
+
+public: virtual void anchorVtable() const;
 }; // class GroupSubModel
 
 #endif // GUARD_GROUPSUBMODEL_H_INCLUDE

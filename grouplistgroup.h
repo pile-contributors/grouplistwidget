@@ -20,14 +20,15 @@ class GROUPLISTWIDGET_EXPORT GroupListGroup : public QListView {
 public:
     GroupListWidget * parent_;
 
-    GroupListGroup (
+    explicit GroupListGroup (
             GroupListWidget * parent);
 
-    QStyleOptionViewItem
+    virtual QStyleOptionViewItem
     viewOptions() {
         return QListView::viewOptions();
     }
 
+public: virtual void anchorVtable() const;
 }; // class GroupListDelegate
 
 #endif // GUARD_GROUP_LIST_GROUP_H_INCLUDE

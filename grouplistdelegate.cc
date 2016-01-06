@@ -48,7 +48,6 @@ void GroupListDelegate::reinit (
         GroupListWidget *lwidget, GroupModel *umodel)
 {
     GROUPLISTWIDGET_TRACE_ENTRY;
-    bool b_ret = false;
     for (;;) {
 
         // For now the mapping is 1:1, but - in the future, we could add more
@@ -62,7 +61,7 @@ void GroupListDelegate::reinit (
             break;
         }
 
-        // retreive additional information from data holders
+        // retrieve additional information from data holders
         int pix_size = lwidget->pixmapSize();
         pix_pos_ = QRect(0, 0, pix_size, pix_size);
 
@@ -71,7 +70,7 @@ void GroupListDelegate::reinit (
                     0,
                     0,
                     fm.averageCharWidth() * 32,
-                    fm.height() * 1.2 + 1);
+                    static_cast<int> (fm.height() * 1.2 + 1));
 
         lay_count_ = umodel->labelCount();
 
@@ -117,7 +116,6 @@ void GroupListDelegate::reinit (
             item_size_ = QSize (16, 16);
         }
 
-        b_ret = true;
         break;
     }
 
@@ -168,10 +166,12 @@ void GroupListDelegate::paint (
     if ((vdeco.type() == QVariant::Pixmap) || (vdeco.type() == QVariant::Bitmap)) {
         QPixmap icon = qvariant_cast<QPixmap>(vdeco);
         float scale = qMin(
-                    (float)pix_rect.width()  / (float)icon.width(),
-                    (float)pix_rect.height() / (float)icon.height());
-        int dst_width = icon.width() * scale;
-        int dst_height = icon.height() * scale;
+                    static_cast<float>(pix_rect.width())  /
+                    static_cast<float>(icon.width()),
+                    static_cast<float>(pix_rect.height()) /
+                    static_cast<float>(icon.height()));
+        int dst_width = static_cast<int>(icon.width() * scale);
+        int dst_height = static_cast<int>(icon.height() * scale);
         drect = QRect(
                     pix_rect.x() + (pix_rect.width()  - dst_width)  / 2,
                     pix_rect.y() + (pix_rect.height() - dst_height) / 2,
@@ -180,10 +180,12 @@ void GroupListDelegate::paint (
     } else if (vdeco.type() == QVariant::Image) {
         QImage icon = qvariant_cast<QImage>(vdeco);
         float scale = qMin(
-                    (float)pix_rect.width()  / (float)icon.width(),
-                    (float)pix_rect.height() / (float)icon.height());
-        int dst_width = icon.width() * scale;
-        int dst_height = icon.height() * scale;
+                    static_cast<float>(pix_rect.width())  /
+                    static_cast<float>(icon.width()),
+                    static_cast<float>(pix_rect.height()) /
+                    static_cast<float>(icon.height()));
+        int dst_width = static_cast<int>(icon.width() * scale);
+        int dst_height = static_cast<int>(icon.height() * scale);
         drect = QRect(
                     pix_rect.x() + (pix_rect.width()  - dst_width)  / 2,
                     pix_rect.y() + (pix_rect.height() - dst_height) / 2,
@@ -239,8 +241,11 @@ void GroupListDelegate::paint (
 
 /* ------------------------------------------------------------------------- */
 QSize GroupListDelegate::sizeHint (
-        const QStyleOptionViewItem & option, const QModelIndex & index ) const
+        const QStyleOptionViewItem & /*option*/,
+        const QModelIndex & /*index*/ ) const
 {
     return item_size_;
 }
 /* ========================================================================= */
+
+void GroupListDelegate::anchorVtable () const {}

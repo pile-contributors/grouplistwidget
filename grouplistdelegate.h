@@ -35,6 +35,7 @@ public:
 public:
 
     //! Constructor.
+    explicit
     GroupListDelegate (
             QObject *parent = NULL);
 
@@ -74,6 +75,7 @@ private:
     Layout layout_; /**< the way internal components are arranged */
     int lay_count_; /**< the number of labels to show */
 
+public: virtual void anchorVtable() const;
 }; // class GroupListDelegate
 
 #endif // GUARD_GROUP_LIST_DELEGATE_H_INCLUDE

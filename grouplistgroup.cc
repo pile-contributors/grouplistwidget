@@ -45,3 +45,5 @@ GroupListGroup::GroupListGroup (GroupListWidget * parent) :
         setGridSize (parent->gridCell ());
     }
 }
+
+void GroupListGroup::anchorVtable () const {}

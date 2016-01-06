@@ -116,7 +116,7 @@ void GroupSubModel::insertSortedRecord (int row)
 
 /* ------------------------------------------------------------------------- */
 /**
- * Retreives the values for all rows and, based on those, arranges the internal
+ * Retrieves the values for all rows and, based on those, arranges the internal
  * list of rows in ascending order.
  */
 void GroupSubModel::performSorting ()
@@ -131,7 +131,7 @@ void GroupSubModel::performSorting ()
     int sortr = m_->sortingRole ();
     beginResetModel();
 
-    // create a list of values so that we don't retreive them multiple times
+    // create a list of values so that we don't retrieve them multiple times
     QVariantList vlst;
     vlst.reserve (i_max);
     for (int i = 0; i < i_max; ++i) {
@@ -299,3 +299,5 @@ void GroupSubModel::baseModelDataChange (
     emit dataChanged (idx, idx, roles);
 }
 /* ========================================================================= */
+
+void GroupSubModel::anchorVtable () const {}
