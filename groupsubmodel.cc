@@ -88,7 +88,7 @@ void GroupSubModel::insertSortedRecord (int row)
             QModelIndex midx_iter = m_->baseModel()->index (row, sortc);
             QVariant iter_data = midx_iter.data (sortr);
 
-            GroupModel::ComparisionReslt res = sort_func (
+            GroupModel::ComparisonReslt res = sort_func (
                         m_, sortc, new_data, iter_data);
 
             switch (res) {
@@ -146,7 +146,7 @@ void GroupSubModel::performSorting ()
             const QVariant & nval = vlst.at (n);
             const QVariant & ival = vlst.at (i);
 
-            GroupModel::ComparisionReslt res = sort_func (
+            GroupModel::ComparisonReslt res = sort_func (
                         m_, sortc, nval, ival);
             switch (res) {
             case GroupModel::Equal: {

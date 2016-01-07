@@ -41,14 +41,14 @@ public:
     enum { BaseColRole = Qt::UserRole + 1000 };
 
     //! The result of comparing two values.
-    enum ComparisionReslt {
+    enum ComparisonReslt {
         Equal = 0,
         Smaller = -1,
         Larger = 1
     };
 
     //! Compare two QVariants.
-    typedef ComparisionReslt (*Compare) (
+    typedef ComparisonReslt (*Compare) (
             GroupModel * model,
             int column,
             const QVariant & v1,
@@ -131,8 +131,8 @@ signals:
 
 public:
 
-    //! Default implementation for comparision function
-    static ComparisionReslt
+    //! Default implementation for comparison function
+    static ComparisonReslt
     defaultCompare (
             GroupModel * model,
             int column,
@@ -315,7 +315,7 @@ public:
     group (
             int idx) const;
 
-    //! Get the number of groups curently defined inside this model.
+    //! Get the number of groups currently defined inside this model.
     virtual int
     groupCount () const {
         return groups_.count();

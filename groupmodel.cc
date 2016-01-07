@@ -10,6 +10,7 @@
 #include "groupmodel.h"
 #include "groupsubmodel.h"
 #include "grouplistwidget-private.h"
+#include <assert.h>
 #include <QAbstractItemModel>
 #include <QUrl>
 #include <QRegExp>
@@ -85,6 +86,8 @@ GroupModel::GroupModel (QAbstractItemModel * model, QObject * parent) :
 {
     GROUPLISTWIDGET_TRACE_ENTRY;
     additional_labels_.append (ModelId(0, Qt::DisplayRole));
+    assert(additional_labels_.at(0).column() == 0);
+    assert(additional_labels_.at(0).role() == Qt::DisplayRole);
     GROUPLISTWIDGET_TRACE_EXIT;
 }
 /* ========================================================================= */
@@ -526,7 +529,7 @@ void GroupModel::buildAllGroups ()
         bool b_found = false;
         group_index = 0;
         foreach(GroupSubModel * subm, groups_) {
-            ComparisionReslt res = group_func_(
+            ComparisonReslt res = group_func_(
                         this, group_.column (), iter_data,
                         subm->groupKey ());
             switch (res) {
@@ -676,7 +679,7 @@ QStringList GroupModel::columnLabels (
 /* ------------------------------------------------------------------------- */
 QStringList GroupModel::sortingColumnLabels (int * idx_crt) const
 {
-    return columnLabels (GroupModel::sortingColumns (), idx_crt, sort_.column ());
+    return columnLabels (sortingColumns (), idx_crt, sort_.column ());
 }
 /* ========================================================================= */
 
@@ -725,9 +728,9 @@ void GroupModel::resetAllSubGroups ()
  * @param row1 first row
  * @param v2 the value for second row
  * @param row2 second row
- * @return the result of the comparision
+ * @return the result of the comparison
  */
-GroupModel::ComparisionReslt GroupModel::defaultCompare (
+GroupModel::ComparisonReslt GroupModel::defaultCompare (
         GroupModel *model, int column,
         const QVariant &v1, const QVariant &v2)
 {

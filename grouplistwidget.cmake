@@ -22,13 +22,15 @@ macro    (grouplistwidgetInit
         "grouplistdelegate.h"
         "groupsubmodel.h"
         "grouplistgroup.h"
-        "grouplistwidget.h")
+        "grouplistwidget.h"
+        "models/groupm_columns.h")
     set(GROUPLISTWIDGET_SOURCES
         "groupmodel.cc"
         "grouplistdelegate.cc"
         "groupsubmodel.cc"
         "grouplistgroup.cc"
-        "grouplistwidget.cc")
+        "grouplistwidget.cc"
+        "models/groupm_columns.cc")
     set(GROUPLISTWIDGET_QT_MODS
         Core Widgets)
 

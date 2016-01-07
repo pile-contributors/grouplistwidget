@@ -367,7 +367,7 @@ void GroupListWidget::appendLayoutToMenu (QMenu *menu)
 /* ------------------------------------------------------------------------- */
 /**
  * The widget takes ownership of the provided pointer and it will destroy it
- * in its own destructor. Use takeListDelegate to avoid this behaviour.
+ * in its own destructor. Use takeListDelegate to avoid this behavior.
  *
  * @param value new delegate to use or NULL to revert to using default delegate.
  */
@@ -397,7 +397,7 @@ void GroupListWidget::setListDelegate (QAbstractItemDelegate *value)
 /* ------------------------------------------------------------------------- */
 /**
  * The widget takes ownership of the provided pointer and it will destroy it
- * in its own destructor. Use takeListDelegate to avoid this behaviour.
+ * in its own destructor. Use takeListDelegate to avoid this behavior.
  *
  * @param value new delegate to use or NULL to revert to using default delegate.
  */
@@ -767,29 +767,31 @@ void GroupListWidget::recreateFromGroup ()
     GROUPLISTWIDGET_TRACE_ENTRY;
     clear ();
     int i_max = m_->groupCount ();
-
-    if (m_->isGrouping()) {
-        for (int i = 0; i < i_max; ++i) {
-            GroupSubModel * gsm = m_->group (i);
-            GrpTreeItem * tvi = new GrpTreeItem (gsm->label(), i, gsm);
+    for (;;) {
+        if (m_->isGrouping()) {
+            for (int i = 0; i < i_max; ++i) {
+                GroupSubModel * gsm = m_->group (i);
+                GrpTreeItem * tvi = new GrpTreeItem (gsm->label(), i, gsm);
+                addTopLevelItem (tvi);
+                QTreeWidgetItem * subtvi = new QTreeWidgetItem (tvi);
+                tvi->lv_ = createListView (gsm, subtvi);
+                tvi->setExpanded (true);
+            }
+        } else {
+            GroupSubModel * gsm = NULL;
+            if (i_max == 1) {
+                gsm = m_->group (0);
+            } else {
+                break;
+            }
+            GrpTreeItem * tvi = new GrpTreeItem (QString("test"), 0, gsm);
             addTopLevelItem (tvi);
-            QTreeWidgetItem * subtvi = new QTreeWidgetItem (tvi);
-            tvi->lv_ = createListView (gsm, subtvi);
+            tvi->lv_ = createListView (gsm, tvi);
             tvi->setExpanded (true);
         }
-    } else {
-        GroupSubModel * gsm = NULL;
-        if (i_max == 1) {
-            gsm = m_->group (0);
-        } else {
-            Q_ASSERT(false);
-        }
-        GrpTreeItem * tvi = new GrpTreeItem (QString("test"), 0, gsm);
-        addTopLevelItem (tvi);
-        tvi->lv_ = createListView (gsm, tvi);
-        tvi->setExpanded (true);
+        arangeLists ();
+        break;
     }
-    arangeLists ();
     GROUPLISTWIDGET_TRACE_EXIT;
 }
 /* ========================================================================= */
@@ -806,8 +808,8 @@ void GroupListWidget::installUnderModel (GroupModel *value)
         connect (value, &GroupModel::groupingChanged,
                  this, &GroupListWidget::underGroupingChanged);
     }
-    reinitDelegate ();
     m_ = value;
+    reinitDelegate ();
     GROUPLISTWIDGET_TRACE_EXIT;
 }
 /* ========================================================================= */
