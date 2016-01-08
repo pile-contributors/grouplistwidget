@@ -280,7 +280,7 @@ QMenu * GroupListWidget::addColumnsToMenu (
         QAction * act = mgroup->addAction (s_col, m_, connect_to);
         act->setCheckable (true);
         act->setChecked (crt_grp == i);
-        act->setProperty ("columnIndex", i);
+        act->setProperty ("columnIndex", gcol_lst.at (i));
 
         ++i;
     }
@@ -476,12 +476,15 @@ QSize GroupListWidget::computeGridCell () const
     if ((m_->baseModel() != NULL) && (i_max > 0)) {
         // update lists currently visible
         GrpTreeItem * it = static_cast<GrpTreeItem *>(topLevelItem (0));
+
         if (list_delegate_ != NULL) {
-            sz = gridCellFromDelegate (list_delegate_, it->lv_->viewOptions ());
+            QStyleOptionViewItem vopts = it->lv_->viewOptions ();
+            sz = gridCellFromDelegate (list_delegate_, vopts);
         } else {
             QAbstractItemDelegate * d = it->lv_->itemDelegate();
             if (d != NULL) {
-                sz = gridCellFromDelegate (d, it->lv_->viewOptions ());
+                QStyleOptionViewItem vopts = it->lv_->viewOptions ();
+                sz = gridCellFromDelegate (d, vopts);
                 QSize autocmop;
                 if (list_view_mode_ == QListView::ListMode) {
                     autocmop = QSize (
@@ -521,7 +524,6 @@ void GroupListWidget::setPixmapSize (int value)
         return;
     pixmap_size_ = value;
     grid_cell_ = computeGridCell ();
-
 
     reinitDelegate ();
     arangeLists ();
@@ -578,6 +580,7 @@ void GroupListWidget::underModelAboutToBeReset()
 /* ------------------------------------------------------------------------- */
 void GroupListWidget::underModelReset()
 {
+    grid_cell_ = computeGridCell ();
     reinitDelegate ();
     recreateFromGroup ();
 }
@@ -587,26 +590,6 @@ void GroupListWidget::underModelReset()
 void GroupListWidget::underGroupingChanged (int, Qt::SortOrder)
 {
     recreateFromGroup ();
-#if 0
-    if (!m_->isGrouping())
-        return;
-    QList<GrpTreeItem*> lst_;
-    lst_.reserve (topLevelItemCount());
-    while (topLevelItemCount() > 0) {
-        GrpTreeItem * it = static_cast<GrpTreeItem *>(topLevelItem (0));
-        takeTopLevelItem (0);
-        lst_.prepend (it);
-        it->lv_ = NULL;
-    }
-    int i_max = lst_.count();
-    foreach(GrpTreeItem * iter, lst_) {
-        addTopLevelItem (iter);
-        iter->lv_ = createListView (iter->gsm_, iter->child (0));
-        iter->group_index_ = i_max - iter->group_index_ - 1;
-        iter->setExpanded (true);
-    }
-    arangeLists ();
-#endif
 }
 /* ========================================================================= */
 
@@ -695,11 +678,11 @@ void GroupListWidget::wheelEvent (QWheelEvent * event)
     if ((event->modifiers () & Qt::ControlModifier) == Qt::ControlModifier) {
         int d = event->delta() / 120;
         while (d > 0) {
-            increasePixSize();
+            increasePixSize ();
             --d;
         }
         while (d < 0) {
-            decreasePixSize();
+            decreasePixSize ();
             ++d;
         }
         event->accept();

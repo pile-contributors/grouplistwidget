@@ -151,7 +151,7 @@ public slots:
         if (pixmap_size_ == -1) {
             new_size = 48;
         } else {
-            new_size = pixmap_size_ * 1.2;
+            new_size = static_cast<int> (pixmap_size_ * 1.2);
         }
         setPixmapSize (new_size);
     }
@@ -163,7 +163,7 @@ public slots:
         if (pixmap_size_ == -1) {
             new_size = 48;
         } else {
-            new_size = pixmap_size_ * 0.8;
+            new_size = static_cast<int> (pixmap_size_ * 0.8);
             if (new_size < 16) new_size = 16;
         }
         setPixmapSize (new_size);

@@ -34,13 +34,13 @@
  * @class GroupModel
  *
  * This class provides an intermediate layer between the model provided by
- * the user and the actual widget. The class may be subclassed to get
+ * the user and the actual widget. The class may be sub-classed to get
  * full control of the internal workings. However, most of the times, it
- * is enough to provide a customizer that formats the data accodingly.
+ * is enough to provide a "customizer" that formats the data accordingly.
  *
  * Internally, the groups are always sorted in ascending order.
  * The group() method inspects the desired groupingDirection()
- * and returns the result acordingly.
+ * and returns the result accordingly.
  *
  * A number of signals are used to communicate with the widgets
  * presenting the data:
@@ -48,7 +48,7 @@
  * when the base model changes and when the grouping column changes;
  * the widgets must respond by reconstructing the entire view.
  * - groupingChanged() informs the widget that the order of the grouping
- * should chnage; the view may simply reorder the groups without
+ * should change; the view may simply reorder the groups without
  * reconstructing everything.
  * - sortingChanged() is raised when either the direction or
  * the column used fr sorting changes; as the underlying
@@ -58,10 +58,10 @@
 
 /* ------------------------------------------------------------------------- */
 /**
- * Default constructor creates a usable instance that can be readly used
+ * Default constructor creates a usable instance that can be readily used
  * with a list widget. The user still needs to install a model for
  * the widget to present anything useful.
- * Alternativelly, the user may provide a model to the constructor that will
+ * Alternatively, the user may provide a model to the constructor that will
  * be installed by the constructor.
  *
  * The instance owns the QAbstractItemModel that is destroyed in the
@@ -182,6 +182,7 @@ QAbstractItemModel * GroupModel::takeBaseModel ()
 /* ------------------------------------------------------------------------- */
 void GroupModel::installBaseModel (QAbstractItemModel * value)
 {
+    GROUPLISTWIDGET_TRACE_ENTRY;
     uninstallBaseModel ();
 
     if (value != NULL) {
@@ -194,12 +195,14 @@ void GroupModel::installBaseModel (QAbstractItemModel * value)
     }
 
     m_base_ = value;
+    GROUPLISTWIDGET_TRACE_EXIT;
 }
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
 void GroupModel::uninstallBaseModel (bool do_delete)
 {
+    GROUPLISTWIDGET_TRACE_ENTRY;
     clearAllGroups ();
     if (m_base_ != NULL) {
         disconnect (m_base_, &QAbstractItemModel::modelAboutToBeReset,
@@ -214,6 +217,7 @@ void GroupModel::uninstallBaseModel (bool do_delete)
     }
 
     m_base_ = NULL;
+    GROUPLISTWIDGET_TRACE_EXIT;
 }
 /* ========================================================================= */
 
@@ -247,6 +251,7 @@ void GroupModel::baseModelDataChange (
 /* ------------------------------------------------------------------------- */
 GroupSubModel * GroupModel::groupFromBaseRow (int base_row, int * index_in_group)
 {
+    GROUPLISTWIDGET_TRACE_ENTRY;
     foreach(GroupSubModel * subm, groups_) {
         int idx = subm->mapping ().indexOf (base_row);
         if (idx != -1) {
@@ -260,6 +265,7 @@ GroupSubModel * GroupModel::groupFromBaseRow (int base_row, int * index_in_group
             return subm;
         }
     }
+    GROUPLISTWIDGET_TRACE_EXIT;
     return NULL;
 }
 /* ========================================================================= */
@@ -267,7 +273,9 @@ GroupSubModel * GroupModel::groupFromBaseRow (int base_row, int * index_in_group
 /* ------------------------------------------------------------------------- */
 void GroupModel::setPixmapColumn (int column)
 {
+    GROUPLISTWIDGET_TRACE_ENTRY;
     pixmap_.setColumn (column);
+    GROUPLISTWIDGET_TRACE_EXIT;
 }
 /* ========================================================================= */
 
@@ -281,7 +289,9 @@ int GroupModel::pixmapColumn () const
 /* ------------------------------------------------------------------------- */
 void GroupModel::setPixmapRole (Qt::ItemDataRole role)
 {
+    GROUPLISTWIDGET_TRACE_ENTRY;
     pixmap_.setRole (role);
+    GROUPLISTWIDGET_TRACE_EXIT;
 }
 /* ========================================================================= */
 
@@ -318,6 +328,7 @@ QPixmap GroupModel::pixmap (int row) const
 bool GroupModel::setGroupingColumn (int column)
 {
     bool b_ret = false;
+    GROUPLISTWIDGET_TRACE_ENTRY;
     for (;;) {
 
         if (column == -1) {
@@ -347,11 +358,12 @@ bool GroupModel::setGroupingColumn (int column)
 
         // make sure provided index is valid
         if (baseModel() != NULL) {
-            if ((column < 0) || (column >= baseModel()->columnCount ())) {
+            int col_max = baseModel()->columnCount ();
+            if ((column < 0) || (column >= col_max)) {
                 GROUPLISTWIDGET_DEBUGM("Grouping column %d is outside valid range "
                                        "[0..%d)\n",
-                                       column, baseModel()->columnCount ());
-                return false;
+                                       column, col_max);
+                break;
             }
         }
         /*if (column == sort_.column ()) {
@@ -367,7 +379,7 @@ bool GroupModel::setGroupingColumn (int column)
                 GROUPLISTWIDGET_DEBUGM("Grouping column can't be the same as "
                                        "pixmap column (%d)\n",
                                        column);
-                return false;
+                break;
             }
         }
 
@@ -393,6 +405,7 @@ bool GroupModel::setGroupingColumn (int column)
         break;
     }
     return b_ret;
+    GROUPLISTWIDGET_TRACE_EXIT;
 }
 /* ========================================================================= */
 
@@ -428,6 +441,7 @@ GroupSubModel * GroupModel::group (int idx) const
  */
 bool GroupModel::setSortingColumn (int column)
 {
+    GROUPLISTWIDGET_TRACE_ENTRY;
     bool b_ret = false;
     for (;;) {
 
@@ -492,6 +506,7 @@ bool GroupModel::setSortingColumn (int column)
         b_ret = true;
         break;
     }
+    GROUPLISTWIDGET_TRACE_EXIT;
     return b_ret;
 }
 /* ========================================================================= */
@@ -499,6 +514,7 @@ bool GroupModel::setSortingColumn (int column)
 /* ------------------------------------------------------------------------- */
 void GroupModel::setSortingDirection(Qt::SortOrder value)
 {
+    GROUPLISTWIDGET_TRACE_ENTRY;
     sort_dir_ = value;
     if (!supress_signals_) {
         foreach (GroupSubModel * subm, groups_) {
@@ -506,6 +522,7 @@ void GroupModel::setSortingDirection(Qt::SortOrder value)
         }
         emit sortingChanged (sort_.column (), sort_dir_);
     }
+    GROUPLISTWIDGET_TRACE_EXIT;
 }
 /* ========================================================================= */
 
@@ -516,6 +533,7 @@ void GroupModel::setSortingDirection(Qt::SortOrder value)
  */
 void GroupModel::buildAllGroups ()
 {
+    GROUPLISTWIDGET_TRACE_ENTRY;
     Q_ASSERT (baseModel () != NULL);
     Q_ASSERT (group_.column () >= 0);
     Q_ASSERT (group_.column () < baseModel ()->columnCount ());
@@ -554,7 +572,7 @@ void GroupModel::buildAllGroups ()
         }
         if (!b_found) {
             GroupSubModel * newm = new GroupSubModel (
-                        this, iter_data, midx.data(group_.role ()).toString());
+                        this, iter_data, midx.data(group_label_role_).toString());
             newm->appendRecord (i);
             groups_.append (newm);
         }
@@ -567,6 +585,7 @@ void GroupModel::buildAllGroups ()
         ++group_index;
     }
 
+    GROUPLISTWIDGET_TRACE_EXIT;
 }
 /* ========================================================================= */
 
@@ -576,6 +595,7 @@ void GroupModel::buildAllGroups ()
  */
 void GroupModel::buildNoGroupingGroup ()
 {
+    GROUPLISTWIDGET_TRACE_ENTRY;
     GroupSubModel * newm = new GroupSubModel (
                 this, QVariant(),
                 tr("(ungrouped)"));
@@ -588,6 +608,7 @@ void GroupModel::buildNoGroupingGroup ()
 
     groups_.append (newm);
     newm->setListIndex (0);
+    GROUPLISTWIDGET_TRACE_EXIT;
 }
 /* ========================================================================= */
 
@@ -599,8 +620,10 @@ void GroupModel::buildNoGroupingGroup ()
  */
 void GroupModel::clearAllGroups ()
 {
+    GROUPLISTWIDGET_TRACE_ENTRY;
     qDeleteAll (groups_);
     groups_.clear ();
+    GROUPLISTWIDGET_TRACE_EXIT;
 }
 /* ========================================================================= */
 
@@ -610,10 +633,12 @@ void GroupModel::clearAllGroups ()
  */
 void GroupModel::performSorting ()
 {
+    GROUPLISTWIDGET_TRACE_ENTRY;
     // go through all groups
     foreach (GroupSubModel * subm, groups_) {
         subm->performSorting ();
     }
+    GROUPLISTWIDGET_TRACE_EXIT;
 }
 /* ========================================================================= */
 
@@ -623,10 +648,12 @@ void GroupModel::performSorting ()
  */
 void GroupModel::performUnsorting ()
 {
+    GROUPLISTWIDGET_TRACE_ENTRY;
     // go through all groups
     foreach (GroupSubModel * subm, groups_) {
         subm->performUnsorting ();
     }
+    GROUPLISTWIDGET_TRACE_EXIT;
 }
 /* ========================================================================= */
 
@@ -638,6 +665,7 @@ void GroupModel::performUnsorting ()
  */
 QList<int> GroupModel::sortingColumns () const
 {
+    GROUPLISTWIDGET_TRACE_ENTRY;
     QList<int> result;
     int i_max = baseModel ()->columnCount();
     result.reserve (i_max - 2);
@@ -648,6 +676,8 @@ QList<int> GroupModel::sortingColumns () const
             continue;*/
         result.append (i);
     }
+
+    GROUPLISTWIDGET_TRACE_EXIT;
     return result;
 }
 /* ========================================================================= */
@@ -656,6 +686,7 @@ QList<int> GroupModel::sortingColumns () const
 QStringList GroupModel::columnLabels (
         const QList<int> & scols, int * idx_crt, int highlite) const
 {
+    GROUPLISTWIDGET_TRACE_ENTRY;
     QStringList result;
     int idx_crt_in_slist = -1;
     result.reserve (scols.count());
@@ -673,6 +704,8 @@ QStringList GroupModel::columnLabels (
 
     if (idx_crt != NULL)
         *idx_crt = idx_crt_in_slist;
+
+    GROUPLISTWIDGET_TRACE_EXIT;
     return result;
 }
 /* ========================================================================= */
@@ -711,9 +744,11 @@ QStringList GroupModel::groupingColumnLabels (int * idx_crt) const
 /* ------------------------------------------------------------------------- */
 void GroupModel::resetAllSubGroups ()
 {
+    GROUPLISTWIDGET_TRACE_ENTRY;
     foreach (GroupSubModel * subm, groups_) {
         subm->signalReset ();
     }
+    GROUPLISTWIDGET_TRACE_EXIT;
 }
 /* ========================================================================= */
 
@@ -732,10 +767,17 @@ void GroupModel::resetAllSubGroups ()
  * @return the result of the comparison
  */
 GroupModel::ComparisonReslt GroupModel::defaultCompare (
-        GroupModel *model, int column,
+        GroupModel * /*model*/, int /*column*/,
         const QVariant &v1, const QVariant &v2)
 {
-    if (v1.type() == v2.type()) {
+    GROUPLISTWIDGET_TRACE_ENTRY;
+    if (v1.isNull() && v2.isNull()) {
+        return Equal;
+    } else if (v1.isNull()) {
+        return Smaller;
+    } else if (v2.isNull()) {
+        return Larger;
+    } else if (v1.type() == v2.type()) {
         switch (v1.type()) {
         case QVariant::Bool: {
             bool vv1 = v1.toBool(); bool vv2 = v2.toBool();
@@ -764,7 +806,7 @@ GroupModel::ComparisonReslt GroupModel::defaultCompare (
         }
         case QVariant::Double: {
             double vv1 = v1.toDouble (); double vv2 = v2.toDouble();
-            if (vv1 == vv2) return Equal;
+            if (qFuzzyCompare (vv1, vv2)) return Equal;
             return vv1 > vv2 ? Larger : Smaller;
         }
         case QVariant::Char: {
@@ -830,10 +872,17 @@ GroupModel::ComparisonReslt GroupModel::defaultCompare (
             if (vv1.y() < vv2.y()) return Smaller;
             return Equal;
         }
-        default: break;
+        default: {
+            GROUPLISTWIDGET_DEBUGM("Cannot compare %s (not supported)\n",
+                                   v1.typeName ());
+            break;}
         }
+    } else {
+        GROUPLISTWIDGET_DEBUGM("Cannot compare %s with %s\n",
+                               v1.typeName (), v2.typeName ());
     }
     Q_ASSERT(false);
+    GROUPLISTWIDGET_TRACE_EXIT;
     return Equal;
 }
 /* ========================================================================= */
