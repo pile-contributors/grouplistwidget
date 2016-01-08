@@ -517,7 +517,8 @@ void GroupModel::setSortingDirection(Qt::SortOrder value)
 void GroupModel::buildAllGroups ()
 {
     Q_ASSERT (baseModel () != NULL);
-    Q_ASSERT ((group_.column () >= 0) && (group_.column () < baseModel ()->columnCount ()));
+    Q_ASSERT (group_.column () >= 0);
+    Q_ASSERT (group_.column () < baseModel ()->columnCount ());
     int i_max = baseModel ()->rowCount();
     int group_index = 0;
 

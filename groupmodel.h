@@ -341,7 +341,7 @@ public slots:
     //! Sets the column in base model that decides grouping by reading columnIndex property of the sender.
     virtual bool
     setGroupingColumnByProperty () {
-        return setGroupingColumn (sender()->property("columnIndex").toInt ());
+        return setGroupingColumn (sender()->property ("columnIndex").toInt ());
     }
 
     //! No grouping.

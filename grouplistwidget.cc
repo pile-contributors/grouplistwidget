@@ -401,7 +401,8 @@ void GroupListWidget::setListDelegate (QAbstractItemDelegate *value)
  *
  * @param value new delegate to use or NULL to revert to using default delegate.
  */
-QAbstractItemDelegate * GroupListWidget::takeListDelegate (QAbstractItemDelegate *value)
+QAbstractItemDelegate * GroupListWidget::takeListDelegate (
+        QAbstractItemDelegate *value)
 {
     if (list_delegate_ == value)
         return NULL;
@@ -483,11 +484,16 @@ QSize GroupListWidget::computeGridCell () const
                 sz = gridCellFromDelegate (d, it->lv_->viewOptions ());
                 QSize autocmop;
                 if (list_view_mode_ == QListView::ListMode) {
-                    autocmop = QSize (2 + pixmap_size_ + 2 + pixmap_size_ + 2, 2 + pixmap_size_ + 2);
+                    autocmop = QSize (
+                                2 + pixmap_size_ + 2 + pixmap_size_ + 2,
+                                2 + pixmap_size_ + 2);
                 } else {
                     QFontMetrics fm(font());
 
-                    autocmop = QSize (2 + pixmap_size_ + 2, 2 + pixmap_size_ + 2 + fm.height()*1.2 + 2);
+                    autocmop = QSize (
+                                2 + pixmap_size_ + 2,
+                                2 + pixmap_size_ + 2 +
+                                static_cast<int>(fm.height()*1.2) + 2);
                 }
                 sz = QSize (qMax (sz.width(), autocmop.width()),
                             qMax (sz.height(), autocmop.height()));
@@ -496,7 +502,10 @@ QSize GroupListWidget::computeGridCell () const
                     sz = QSize (2 + pixmap_size_ + 2 + pixmap_size_ + 2, 2 + pixmap_size_ + 2);
                 } else {
                     QFontMetrics fm(font());
-                    sz = QSize (2 + pixmap_size_ + 2, 2 + pixmap_size_ + 2 + fm.height()*1.2 + 2);
+                    sz = QSize (
+                                2 + pixmap_size_ + 2,
+                                2 + pixmap_size_ + 2 +
+                                static_cast<int>(fm.height()*1.2) + 2);
                 }
             }
         }
@@ -620,7 +629,7 @@ void GroupListWidget::listViewSelChange (
     for (int i = 0; i < i_max; ++i) {
         GrpTreeItem * iter = static_cast<GrpTreeItem *>(topLevelItem(i));
         if (iter->gsm_ == gsm) {
-            // found the model that trigered the event
+            // found the model that triggered the event
         } else if (iter->lv_ != NULL){
             iter->lv_->setCurrentIndex (QModelIndex());
         }
@@ -638,9 +647,11 @@ void GroupListWidget::genericSlot ()
     QObject * s = sender ();
     QString s_func = s->property (GEN_SLOT_FUN).toString ();
     if (s_func == QLatin1String (GEN_SLOT_FUN_FLOW)) {
-        setFlow ((QListView::Flow)s->property (GEN_SLOT_ARG).toInt ());
+        setFlow (static_cast<QListView::Flow> (
+                     s->property (GEN_SLOT_ARG).toInt ()));
     } else if (s_func == QLatin1String (GEN_SLOT_FUN_MODE)) {
-        setViewMode ((QListView::ViewMode)s->property (GEN_SLOT_ARG).toInt ());
+        setViewMode (static_cast<QListView::ViewMode> (
+                         s->property (GEN_SLOT_ARG).toInt ()));
     } else {
         Q_ASSERT(false);
     }

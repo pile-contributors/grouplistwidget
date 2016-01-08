@@ -77,10 +77,10 @@ Sorting can be ascending or descending as set by
 setter methods have associated getter methods.
 
 Qt Signals are used to communicate changes in the state of the
-model to the views. `GroupModel` uses `modelAboutToBeReset()`,
+model to the views. `GroupModel` uses
 `modelAboutToBeReset()` and `modelReset()` to communicate with
 `GroupListWidget` and `GroupSubModel` uses `modelAboutToBeReset()`
-and `modelAboutToBeReset()` to communicate with embedded `QListView`.
+and `modelReset()` to communicate with embedded `QListView`.
 
 GroupSubModel
 -------------
