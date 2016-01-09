@@ -28,6 +28,12 @@
 #endif
 
 #if DEBUG_OFF
+#    define GROUPLISTWIDGET_DEBUGV printf
+#else
+#    define GROUPLISTWIDGET_DEBUGV black_hole
+#endif
+
+#if DEBUG_OFF
 #    define GROUPLISTWIDGET_TRACE_ENTRY printf("GROUPLISTWIDGET ENTRY %s in %s[%d]\n", __func__, __FILE__, __LINE__)
 #else
 #    define GROUPLISTWIDGET_TRACE_ENTRY

@@ -139,6 +139,7 @@ void GroupListDelegate::paint (
         QPainter * painter, const QStyleOptionViewItem & option,
         const QModelIndex & index ) const
 {
+    GROUPLISTWIDGET_TRACE_ENTRY;
     bool selected =
             (option.state & QStyle::State_Selected) == QStyle::State_Selected;
 
@@ -150,28 +151,32 @@ void GroupListDelegate::paint (
     }
 
     painter->setFont (option.font);
-#ifdef GROUPLISTWIDGET_DEBUG
+#if 0 // def GROUPLISTWIDGET_DEBUG
     painter->setPen (Qt::SolidLine);
 #else
     painter->setPen (Qt::NoPen);
 #endif
     painter->drawRect (option.rect);
-    GROUPLISTWIDGET_DEBUGM("Drawing at pos (%d, %d), size (%d, %d)\n",
+    GROUPLISTWIDGET_DEBUGV("Drawing at pos (%d, %d), size (%d, %d)\n",
                            option.rect.x (), option.rect.y(),
                            option.rect.width (), option.rect.height ());
 
     QRect pix_rect = pix_pos_.translated (option.rect.topLeft());
     QRect drect;
     QVariant vdeco = index.data(Qt::DecorationRole);
-    if ((vdeco.type() == QVariant::Pixmap) || (vdeco.type() == QVariant::Bitmap)) {
+
+#   define PIX_BMP(arg) ((arg == QVariant::Pixmap) || \
+                         (arg == QVariant::Bitmap))
+
+    if (PIX_BMP(vdeco.type())) {
         QPixmap icon = qvariant_cast<QPixmap>(vdeco);
         float scale = qMin(
-                    static_cast<float>(pix_rect.width())  /
-                    static_cast<float>(icon.width()),
-                    static_cast<float>(pix_rect.height()) /
-                    static_cast<float>(icon.height()));
-        int dst_width = static_cast<int>(icon.width() * scale);
-        int dst_height = static_cast<int>(icon.height() * scale);
+                    static_cast<float> (pix_rect.width())  /
+                    static_cast<float> (icon.width()),
+                    static_cast<float> (pix_rect.height()) /
+                    static_cast<float> (icon.height()));
+        int dst_width = static_cast<int> (icon.width() * scale);
+        int dst_height = static_cast<int> (icon.height() * scale);
         drect = QRect(
                     pix_rect.x() + (pix_rect.width()  - dst_width)  / 2,
                     pix_rect.y() + (pix_rect.height() - dst_height) / 2,
@@ -180,12 +185,12 @@ void GroupListDelegate::paint (
     } else if (vdeco.type() == QVariant::Image) {
         QImage icon = qvariant_cast<QImage>(vdeco);
         float scale = qMin(
-                    static_cast<float>(pix_rect.width())  /
-                    static_cast<float>(icon.width()),
-                    static_cast<float>(pix_rect.height()) /
-                    static_cast<float>(icon.height()));
-        int dst_width = static_cast<int>(icon.width() * scale);
-        int dst_height = static_cast<int>(icon.height() * scale);
+                    static_cast<float> (pix_rect.width())  /
+                    static_cast<float> (icon.width()),
+                    static_cast<float> (pix_rect.height()) /
+                    static_cast<float> (icon.height()));
+        int dst_width = static_cast<int> (icon.width() * scale);
+        int dst_height = static_cast<int> (icon.height() * scale);
         drect = QRect(
                     pix_rect.x() + (pix_rect.width()  - dst_width)  / 2,
                     pix_rect.y() + (pix_rect.height() - dst_height) / 2,
@@ -199,7 +204,7 @@ void GroupListDelegate::paint (
     //if (!option.icon.isNull()) {
     //    option.icon.paint (painter, option.rect, option.decorationAlignment);
     //}
-    GROUPLISTWIDGET_DEBUGM("- image pos (%d, %d), size (%d, %d)\n",
+    GROUPLISTWIDGET_DEBUGV("- image pos (%d, %d), size (%d, %d)\n",
                            drect.x (), drect.y(),
                            drect.width (), drect.height ());
 
@@ -211,7 +216,7 @@ void GroupListDelegate::paint (
     // painter->drawText (option.rect, option.displayAlignment, option.text);
 
     QRect text_rect = text_pos_.translated (option.rect.topLeft());
-    GROUPLISTWIDGET_DEBUGM("- first text pos (%d, %d), size (%d, %d)\n",
+    GROUPLISTWIDGET_DEBUGV("- first text pos (%d, %d), size (%d, %d)\n",
                            text_rect.x (), text_rect.y(),
                            text_rect.width (), text_rect.height ());
 
@@ -235,7 +240,7 @@ void GroupListDelegate::paint (
 
         text_rect.translate (0, text_rect.height());
     }
-
+    GROUPLISTWIDGET_TRACE_EXIT;
 }
 /* ========================================================================= */
 

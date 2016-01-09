@@ -62,7 +62,7 @@ GroupSubModel::~GroupSubModel()
 /**
  * Makes sure that the inserted row is placed at appropriate index.
  */
-void GroupSubModel::insertSortedRecord (int row)
+void GroupSubModel::insertSortedRecord (int new_row)
 {
     int idx = 0;
     bool inserted = false;
@@ -72,8 +72,8 @@ void GroupSubModel::insertSortedRecord (int row)
         // still, we have no guarantee that the rows arive in
         // increasing order
         foreach (int rold, map_) {
-            if (rold > row) {
-                map_.insert (idx, row);
+            if (rold > new_row) {
+                map_.insert (idx, new_row);
                 inserted = true;
             }
             ++idx;
@@ -81,7 +81,7 @@ void GroupSubModel::insertSortedRecord (int row)
     } else {
         int sortr = m_->sortingRole ();
         GroupModel::Compare sort_func = m_->sortingFunc();
-        QModelIndex midx_new = m_->baseModel()->index (row, sortc);
+        QModelIndex midx_new = m_->baseModel()->index (new_row, sortc);
         QVariant new_data = midx_new.data (sortr);
 
         foreach (int row, map_) {
@@ -93,11 +93,11 @@ void GroupSubModel::insertSortedRecord (int row)
 
             switch (res) {
             case GroupModel::Equal: {
-                map_.insert (idx+1, row);
+                map_.insert (idx+1, new_row);
                 inserted = true;
                 break; }
             case GroupModel::Smaller: {
-                map_.insert (idx, row);
+                map_.insert (idx, new_row);
                 inserted = true;
                 break; }
             case GroupModel::Larger: {
@@ -109,7 +109,7 @@ void GroupSubModel::insertSortedRecord (int row)
         }
     }
     if (!inserted) {
-        map_.append (row);
+        map_.append (new_row);
     }
 }
 /* ========================================================================= */
@@ -195,7 +195,7 @@ void GroupSubModel::performUnsorting()
 /* ------------------------------------------------------------------------- */
 /**
  * As this is a list model it is expected that column will always be 0.
- * Nonetheless mosst of the time the column is forwarded to the user model.
+ * Nonetheless most of the time the column is forwarded to the user model.
  *
  * The method filters the decoration role for column 0 that is handled by
  * requesting the decoration from parent model.
