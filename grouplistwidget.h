@@ -71,12 +71,14 @@ public:
     //! Adds actions for grouping to the menu.
     void
     appendGroupToMenu (
-            QMenu * menu);
+            QMenu * menu,
+            bool directly = false);
 
     //! Adds actions for sorting to the menu.
     void
     appendSortToMenu (
-            QMenu * menu);
+            QMenu * menu,
+            bool directly = false);
 
     //! Adds actions for arranging the items to the menu.
     void
@@ -255,7 +257,9 @@ private:
             const QString &menu_label,
             const QList<int> &gcol_lst,
             const QStringList &gcol_lbl,
-            int crt_grp, const char *connect_to);
+            int crt_grp,
+            const char *connect_to,
+            bool directly);
 
     //! Makes sure that the lists show all their content.
     void
@@ -270,6 +274,48 @@ private:
             QAbstractItemDelegate *delegate,
             QStyleOptionViewItem & option) const;
 
+
+public:
+
+    static QLatin1String nameGroupAscending () {
+        return QLatin1String ("GroupAscending");
+    }
+
+    static QLatin1String nameGroupDescending () {
+        return QLatin1String ("GroupDescending");
+    }
+
+    static QLatin1String nameGroupDestroy () {
+        return QLatin1String ("GroupDestroy");
+    }
+
+    static QLatin1String nameSortAscending () {
+        return QLatin1String ("SortAscending");
+    }
+
+    static QLatin1String nameSortDescending () {
+        return QLatin1String ("SortDescending");
+    }
+
+    static QLatin1String nameSortDestroy () {
+        return QLatin1String ("SortDestroy");
+    }
+
+    static QLatin1String nameLayoutList () {
+        return QLatin1String ("LayoutList");
+    }
+
+    static QLatin1String nameLayoutIcons () {
+        return QLatin1String ("LayoutIcons");
+    }
+
+    static QLatin1String nameLayoutZoomIn () {
+        return QLatin1String ("LayoutZoomIn");
+    }
+
+    static QLatin1String nameLayoutZoomOut () {
+        return QLatin1String ("LayoutZoomOut");
+    }
 
 
     GroupModel * m_; /**< the underlying model */

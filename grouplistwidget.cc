@@ -270,9 +270,14 @@ GroupModel *GroupListWidget::takeUnderModel (GroupModel *other)
 QMenu * GroupListWidget::addColumnsToMenu (
         QMenu *menu, const QString & menu_label,
         const QList<int> & gcol_lst, const QStringList & gcol_lbl,
-        int crt_grp, const char * connect_to)
+        int crt_grp, const char * connect_to, bool directly)
 {
-    QMenu * mgroup = menu->addMenu (menu_label);
+    QMenu * mgroup;
+    if (directly) {
+        mgroup = menu;
+    } else {
+        mgroup = menu->addMenu (menu_label);
+    }
 
     Q_ASSERT(gcol_lst.count() == gcol_lbl.count());
     int i = 0;
@@ -291,54 +296,62 @@ QMenu * GroupListWidget::addColumnsToMenu (
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
-void GroupListWidget::appendGroupToMenu (QMenu *menu)
+void GroupListWidget::appendGroupToMenu (QMenu *menu, bool directly)
 {
     int crt_grp = -1;
-    QMenu * mgroup = addColumnsToMenu (
-                menu, tr ("Group by:"),
-                m_->groupingColumns (), m_->groupingColumnLabels (&crt_grp),
-                crt_grp, SLOT(setGroupingColumnByProperty()));
+    QMenu * mgroup;
+    mgroup = addColumnsToMenu (
+            menu, tr ("Group by:"),
+            m_->groupingColumns (), m_->groupingColumnLabels (&crt_grp),
+            crt_grp, SLOT(setGroupingColumnByProperty()), directly);
 
     QAction * act_gr_asc = mgroup->addAction (
                 tr ("Ascending"), m_, SLOT(setGroupingAscending()));
     act_gr_asc->setCheckable (true);
     act_gr_asc->setChecked (m_->groupingDirection() == Qt::AscendingOrder);
+    act_gr_asc->setObjectName (nameGroupAscending ());
 
     QAction * act_gr_desc = mgroup->addAction (
                 tr ("Descending"), m_, SLOT(setGroupingDescending()));
     act_gr_desc->setCheckable (true);
     act_gr_desc->setChecked (m_->groupingDirection() == Qt::DescendingOrder);
+    act_gr_desc->setObjectName (nameGroupDescending ());
 
     mgroup->addSeparator();
     QAction * act_ungroup = mgroup->addAction (
                 tr ("Ungrouped"), m_, SLOT(removeGrouping()));
     act_ungroup->setEnabled (m_->isGrouping ());
+    act_ungroup->setObjectName (nameGroupDestroy ());
+
 }
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
-void GroupListWidget::appendSortToMenu (QMenu *menu)
+void GroupListWidget::appendSortToMenu (QMenu *menu, bool directly)
 {
     int crt_sort = -1;
     QMenu * msort = addColumnsToMenu (
                 menu, tr ("Sort by:"),
                 m_->sortingColumns (), m_->sortingColumnLabels (&crt_sort),
-                crt_sort, SLOT(setSortingColumnByProperty()));
+                crt_sort, SLOT(setSortingColumnByProperty()), directly);
 
     QAction * act_srt_asc = msort->addAction (
                 tr ("Ascending"), m_, SLOT(setSortingAscending()));
     act_srt_asc->setCheckable (true);
     act_srt_asc->setChecked (m_->sortingDirection() == Qt::AscendingOrder);
+    act_srt_asc->setObjectName (nameSortAscending ());
 
     QAction * act_srt_desc = msort->addAction (
                 tr ("Descending"), m_, SLOT(setSortingDescending()));
     act_srt_desc->setCheckable (true);
     act_srt_desc->setChecked (m_->sortingDirection() == Qt::DescendingOrder);
+    act_srt_desc->setObjectName (nameSortDescending ());
 
     msort->addSeparator();
     QAction * act_unsort = msort->addAction (
                 tr ("Unsorted"), m_, SLOT(removeSorting()));
     act_unsort->setEnabled (m_->isSorting ());
+    act_unsort->setObjectName (nameSortDestroy ());
 }
 /* ========================================================================= */
 
@@ -350,16 +363,25 @@ void GroupListWidget::appendLayoutToMenu (QMenu *menu)
     QAction * act;
 
     GEN_SLOT_ACTION(MODE, tr ("List View"), viewMode(), QListView::ListMode);
+    act->setObjectName (nameLayoutList ());
+
     GEN_SLOT_ACTION(MODE, tr ("Icon View"), viewMode(), QListView::IconMode);
+    act->setObjectName (nameLayoutIcons ());
+
     mnu->addSeparator();
+
     /*
     GEN_SLOT_ACTION(FLOW, tr ("Left to Right"), flow (), QListView::LeftToRight);
     GEN_SLOT_ACTION(FLOW, tr ("Top to Bottom"), flow (), QListView::TopToBottom);
     mnu->addSeparator();*/
+
     act = mnu->addAction (tr ("Zoom in"), this, SLOT(increasePixSize()));
     act->setEnabled (m_->pixmapColumn() != -1);
+    act->setObjectName (nameLayoutZoomIn ());
+
     act = mnu->addAction (tr ("Zoom out"), this, SLOT(decreasePixSize()));
     act->setEnabled (m_->pixmapColumn() != -1);
+    act->setObjectName (nameLayoutZoomOut ());
 
 }
 /* ========================================================================= */

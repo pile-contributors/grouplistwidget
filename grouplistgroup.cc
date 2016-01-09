@@ -25,7 +25,7 @@ GroupListGroup::GroupListGroup (GroupListWidget * parent) :
     parent_(parent)
 {
     setUniformItemSizes (true);
-#   ifndef GROUPLISTWIDGET_DEBUG
+#   if 1 // ndef GROUPLISTWIDGET_DEBUG
     setFrameStyle (QFrame::NoFrame | QFrame::Plain);
 #   else
     setFrameStyle (QFrame::Box | QFrame::Plain);
