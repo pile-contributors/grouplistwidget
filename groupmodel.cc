@@ -527,6 +527,19 @@ void GroupModel::setSortingDirection(Qt::SortOrder value)
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
+void GroupModel::addLabels (
+        const QList<int> & col_lst, Qt::ItemDataRole role)
+{
+    emit modelAboutToBeReset ();
+    foreach (int i, col_lst) {
+        additional_labels_.append (ModelId (i, role));
+    }
+    emit modelReset ();
+    // resetAllSubGroups ();
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
 /**
  * The method asserts that there is a base model installed and that
  * the grouping column has a value inside valid range.

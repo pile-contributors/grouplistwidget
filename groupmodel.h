@@ -207,6 +207,12 @@ public:
         addLabel (ModelId (column, role));
     }
 
+    //! Add labels to be presented to the user using a shared role.
+    void
+    addLabels (
+            const QList<int> & col_lst,
+            Qt::ItemDataRole role = Qt::DisplayRole);
+
     //! Set the column and role for main label.
     void
     setLabel (

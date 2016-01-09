@@ -242,7 +242,7 @@ private:
     uninstallUnderModel (
             bool b_delete = false);
 
-    //! Create one internal widget for group conetnt.
+    //! Create one internal widget for group content.
     GroupListGroup *
     createListView (
             GroupSubModel *smdl,
@@ -261,7 +261,7 @@ private:
     void
     arangeLists ();
 
-    //! Let the dekegate cache geometry.
+    //! Let the delegate cache geometry.
     void
     reinitDelegate ();
 
@@ -273,7 +273,7 @@ private:
 
 
     GroupModel * m_; /**< the underlying model */
-    bool resize_guard_; /**< is it ok to react to resize? */
+    bool resize_guard_; /**< is it OK to react to resize? */
     QListView::ViewMode list_view_mode_; /**< can be either list (text on the right) or icon (text beneath) */
     QListView::Flow list_flow_; /**< arrange items from left to right or from top to bottom */
     int pixmap_size_; /**< the size of the image (-1 is unconstrained */
