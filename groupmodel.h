@@ -28,6 +28,7 @@ public:
     ModelId (int column, Qt::ItemDataRole role) : QPair<int,Qt::ItemDataRole>(column, role) {}
     int column () const { return first; }
     void setColumn (int value) { first = value; }
+    bool isValid () const { return first != -1; }
     Qt::ItemDataRole role () const { return second; }
     void setRole (Qt::ItemDataRole value) { second = value; }
 };
@@ -118,16 +119,24 @@ public:
         return user_data_;
     }
 
+    //! The number of items.
+    int
+    count () const;
+
+    //! The number of items.
+    bool
+    remove (
+            int row);
 
 signals:
 
     //! Before the actual changes are implemented.
     void
-    modelAboutToBeReset ();
+    modelAboutToBeReset () const;
 
     //! After the model was updated.
     void
-    modelReset ();
+    modelReset () const;
 
 public:
 
@@ -184,13 +193,7 @@ public:
 
     //! Column and role for a label.
     ModelId
-    label (int idx) const {
-        if ((idx < 0) || (idx > additional_labels_.length ())) {
-            return ModelId ();
-        } else {
-            return additional_labels_.at (idx);
-        }
-    }
+    label (int idx) const;
 
     //! Add the column and role for an additional label to be presented to the user.
     void
@@ -244,6 +247,12 @@ public:
         setLabel (ModelId (column, role), idx);
     }
 
+    //! Get the label for an item.
+    QString
+    itemLabel (
+            int item,
+            int pos = 0) const;
+
     ///@}
     /*  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  */
 
@@ -256,6 +265,12 @@ public:
     ///@{
 
 public:
+
+    //! Find the group that hosts a base model row; this is slow.
+    GroupSubModel *
+    groupForRow (
+            int base_row,
+            int * index_in_group = NULL);
 
     //! Retrieve the column in base model that decides grouping.
     virtual int
@@ -507,6 +522,10 @@ public slots:
         setSortingDirection (Qt::DescendingOrder);
     }
 
+    //! Do regrouping all over again.
+    void
+    regroup ();
+
 protected:
 
     //! Sorts the items in all groups.
@@ -537,6 +556,12 @@ private slots:
             const QModelIndex &bottomRight,
             const QVector<int> &roles = QVector<int>());
 
+    void
+    baseModelRowsRemoved (
+            const QModelIndex & parent,
+            int first,
+            int last);
+
 private:
 
     //! Install a base model inside this instance.
@@ -548,13 +573,6 @@ private:
     void
     uninstallBaseModel (
             bool do_delete = true);
-
-    //! Find the group that hosts a base model row; this is slow.
-    GroupSubModel *
-    groupFromBaseRow (
-            int base_row,
-            int * index_in_group);
-
 
     QAbstractItemModel * m_base_; /**< the user model */
 

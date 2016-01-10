@@ -143,7 +143,8 @@ GroupListWidget::GroupListWidget (QWidget *parent) :
     //list_flow_(QListView::TopToBottom),
     pixmap_size_(-1),
     list_delegate_(NULL),
-    grid_cell_()
+    grid_cell_(),
+    current_row_(-1)
 {
     GROUPLISTWIDGET_TRACE_ENTRY;
     setItemDelegate (new GrpTreeDeleg(itemDelegate (), this));
@@ -158,7 +159,7 @@ GroupListWidget::GroupListWidget (QWidget *parent) :
 
 /* ------------------------------------------------------------------------- */
 /**
- * The destructr will also destruct internal model.
+ * The destructor will also destruct internal model.
  */
 GroupListWidget::~GroupListWidget()
 {
@@ -617,10 +618,11 @@ void GroupListWidget::underGroupingChanged (int, Qt::SortOrder)
 
 /* ------------------------------------------------------------------------- */
 void GroupListWidget::listViewSelChange (
-        const QModelIndex &current, const QModelIndex &)
+        const QModelIndex & current, const QModelIndex &)
 {
-    if (!current.isValid())
+    if (!current.isValid()) {
         return;
+    }
     const GroupSubModel * gsm =
             static_cast<const GroupSubModel *>(current.model());
     if (gsm == NULL) {
@@ -640,9 +642,37 @@ void GroupListWidget::listViewSelChange (
         }
     }
     int row_in_list = current.row();
-    int row_in_base = gsm->mapRowToBaseModel (row_in_list);
-    emit currentLVItemChanged (row_in_base);
-    emit currentLVItemChangedEx (row_in_base, row_in_list, gsm->listIndex ());
+    int prev_current = current_row_;
+    current_row_ = gsm->mapRowToBaseModel (row_in_list);
+    emit currentLVItemChanged (current_row_, prev_current);
+    emit currentLVItemChangedEx (current_row_, row_in_list, gsm->listIndex ());
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+void GroupListWidget::setBlueItem (int value)
+{
+    if ((value < 0) || (value >= m_->count ())) {
+
+
+
+        /// @todo deselect
+        ///
+        ///
+        ///
+        return;
+    } else {
+        int index_in_group;
+        GroupSubModel * subgrp = m_->groupForRow (
+                    value, &index_in_group);
+
+        /// @todo
+        ///
+        ///
+        ///
+
+        current_row_ = value;
+    }
 }
 /* ========================================================================= */
 
@@ -808,6 +838,11 @@ void GroupListWidget::recreateFromGroup ()
         arangeLists ();
         break;
     }
+
+    emit currentLVItemChanged (-1, -1);
+    emit currentLVItemChangedEx (-1, -1, -1);
+    current_row_ = -1;
+
     GROUPLISTWIDGET_TRACE_EXIT;
 }
 /* ========================================================================= */

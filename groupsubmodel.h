@@ -95,11 +95,11 @@ public:
         return s_label_;
     }
 
-    //! Sort internal rows acording to the rules of the parent.
+    //! Sort internal rows according to the rules of the parent.
     void
     performSorting ();
 
-    //! Sort internal rows acording to their values.
+    //! Sort internal rows according to their values.
     void
     performUnsorting ();
 
@@ -132,6 +132,12 @@ public:
     mapping () const {
         return map_;
     }
+
+    virtual bool
+    removeRows (
+            int row,
+            int count,
+            const QModelIndex &parent = QModelIndex());
 
 protected:
 

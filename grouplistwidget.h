@@ -129,6 +129,19 @@ public:
     takeListDelegate (
             QAbstractItemDelegate * value = NULL);
 
+    //! The index of current item or -1 if none.
+    int
+    blueItem () const {
+        return current_row_;
+    }
+
+    //! Change the index of current item (-1 to clear selection).
+    void
+    setBlueItem (
+            int value);
+
+
+
 public slots:
 
     //! Place text to the right ("list") or to the bottom ("icon")
@@ -176,7 +189,8 @@ signals:
     //! Informs that current item has changed.
     void
     currentLVItemChanged (
-            int row);
+            int row,
+            int previous_row);
 
     //! Informs that current item has changed.
     void
@@ -324,7 +338,9 @@ public:
     QListView::Flow list_flow_; /**< arrange items from left to right or from top to bottom */
     int pixmap_size_; /**< the size of the image (-1 is unconstrained */
     QAbstractItemDelegate * list_delegate_; /**< the delegate used with lists */
-    QSize grid_cell_;
+    QSize grid_cell_; /**< the dimension for the grid cell */
+    int current_row_; /**< The index of the current row */
+
 }; // GroupListWidget
 
 #endif // GUARD_GROUPLISTWIDGET_H_INCLUDE

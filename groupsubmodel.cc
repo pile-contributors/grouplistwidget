@@ -226,7 +226,7 @@ QVariant GroupSubModel::data (const QModelIndex &index, int role) const
             return QSize(60, 20);
         }*/ else if (role >= GroupModel::BaseColRole) {
             c = role - GroupModel::BaseColRole;
-            if (c >= m_->labelCount()) {
+            if (c >= m_->labelCount ()) {
                 return QVariant();
             }
 
@@ -272,6 +272,28 @@ int GroupSubModel::mapRowToBaseModel (int row) const
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
+bool GroupSubModel::removeRows (
+        int row, int count, const QModelIndex & /*parent*/)
+{
+    int last_row = row + count - 1;
+    if (last_row >= map_.count()) {
+        GROUPLISTWIDGET_DEBUGM(
+                    "Last row %d is outside valid range [0..%d)\n",
+                    last_row,  map_.count());
+        last_row = map_.count() - 1;
+    }
+
+   // beginRemoveRows (parent, row, last_row);
+    for (int riter = last_row; riter >= row ; --riter) {
+        map_.removeAt (riter);
+    }
+   // endRemoveRows();
+    signalReset ();
+    return true;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
 int GroupSubModel::listIndex () const
 {
     if (m_->sortingDirection() == Qt::AscendingOrder) {
@@ -279,7 +301,6 @@ int GroupSubModel::listIndex () const
     } else {
         return m_->groupCount() - list_index_;
     }
-
 }
 /* ========================================================================= */
 

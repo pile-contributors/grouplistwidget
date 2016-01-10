@@ -28,6 +28,7 @@
 #include <QRectF>
 #include <QPixmap>
 #include <QCoreApplication>
+#include <QMap>
 
 
 /**
@@ -192,6 +193,8 @@ void GroupModel::installBaseModel (QAbstractItemModel * value)
                  this, &GroupModel::modelReset);
         connect (value, &QAbstractItemModel::dataChanged,
                  this, &GroupModel::baseModelDataChange);
+//        connect (value, &QAbstractItemModel::rowsRemoved,
+//                 this, &GroupModel::baseModelRowsRemoved);
     }
 
     m_base_ = value;
@@ -211,6 +214,8 @@ void GroupModel::uninstallBaseModel (bool do_delete)
                     this, &GroupModel::modelReset);
         disconnect (m_base_, &QAbstractItemModel::dataChanged,
                     this, &GroupModel::baseModelDataChange);
+//        disconnect (m_base_, &QAbstractItemModel::rowsRemoved,
+//                    this, &GroupModel::baseModelRowsRemoved);
 
         if (do_delete)
             delete m_base_;
@@ -232,7 +237,7 @@ void GroupModel::baseModelDataChange (
         int i_max = i + qAbs (topLeft.row() - bottomRight.row()) + 1;
         for (; i < i_max; ++i) {
             int index_in_group = -1;
-            GroupSubModel * grp = groupFromBaseRow (i, &index_in_group);
+            GroupSubModel * grp = groupForRow (i, &index_in_group);
             if (grp == NULL) {
                 GROUPLISTWIDGET_DEBUGM(
                             "Received word that row %d changed in "
@@ -249,7 +254,78 @@ void GroupModel::baseModelDataChange (
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
-GroupSubModel * GroupModel::groupFromBaseRow (int base_row, int * index_in_group)
+void GroupModel::baseModelRowsRemoved (
+        const QModelIndex & /*parent*/, int first, int last)
+{
+    GROUPLISTWIDGET_TRACE_ENTRY;
+#if 0
+    if (groups_.count() > 0) {
+        QMap<int, QList<int> > affected;
+        for (int i = first; i <= last; ++i) {
+            int index_in_group = -1;
+            GroupSubModel * grp = groupForRow (i, &index_in_group);
+            if (grp == NULL) {
+                GROUPLISTWIDGET_DEBUGM(
+                            "Received word that row %d was removed in "
+                            "base model but it was not found in groups\n",
+                            i);
+            } else {
+                QList<int> rem_lst = affected.value (
+                            grp->listIndex(), QList<int>());
+                rem_lst.append (index_in_group);
+                affected[grp->listIndex()] = rem_lst;
+            }
+        }
+
+        foreach(int k, affected.keys ()) {
+            GroupSubModel * grp = groups_.at (k);
+            QList<int> rem_lst = affected.value (k);
+            // sort the list of rows to remove from largest to smallest
+            qSort (rem_lst.begin(), rem_lst.end(), qGreater<int>());
+
+            // make only necessary calls (join intervals in a single group)
+            int count = 0;
+            int to_rem = -11;
+            int i_max = rem_lst.count();
+            for (int i = 0; i < i_max; ++i) {
+                int idx = rem_lst.at (i);
+                if (idx == to_rem - 1) {
+                    // join with previous
+                    --to_rem;
+                    count++;
+                } else {
+                    if (count > 0) {
+                        // if not first one
+                        grp->removeRows (to_rem, count);
+                    }
+                    count = 1;
+                    to_rem = idx;
+                }
+            }
+            if (count > 0) {
+                grp->removeRows (to_rem, count);
+            }
+        }
+    }
+#else
+
+#endif
+    GROUPLISTWIDGET_TRACE_EXIT;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+/**
+ * There is no internal reverse mapping from rows to groups, so this is an
+ * expensive method as it has to search on average half the rows.
+ *
+ * @param base_row The 0 based index in the base model.
+ * @param index_in_group if found, this will hold the index inside the group
+ * of the item.
+ * @return the sub-model or NULL
+ */
+GroupSubModel * GroupModel::groupForRow (
+        int base_row, int * index_in_group)
 {
     GROUPLISTWIDGET_TRACE_ENTRY;
     foreach(GroupSubModel * subm, groups_) {
@@ -303,6 +379,11 @@ Qt::ItemDataRole GroupModel::pixmapRole () const
 /* ========================================================================= */
 
 /* ------------------------------------------------------------------------- */
+/**
+ * The result type depends on the underlying model.
+ *
+ * @param row Indicates the item using its zero-based index.
+ */
 QPixmap GroupModel::pixmap (int row) const
 {
     if (pixmap_.column () == -1)
@@ -311,6 +392,41 @@ QPixmap GroupModel::pixmap (int row) const
         return QPixmap();
     return qvariant_cast<QPixmap>(
                 baseModel ()->index(row, pixmap_.column ()).data (pixmap_.role ()));
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+int GroupModel::count() const
+{
+    if (baseModel () == NULL)
+        return 0;
+    else
+        return baseModel ()->rowCount ();
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+bool GroupModel::remove (int row)
+{
+    bool b_ret = false;
+    if (baseModel () == NULL) {
+        GROUPLISTWIDGET_DEBUGM("No base model to remove from\n");
+    } else {
+        int row_max = baseModel()->rowCount ();
+        if ((row < 0) || (row >= row_max)) {
+            GROUPLISTWIDGET_DEBUGM("Row %d is outside valid range "
+                                   "[0..%d)\n",
+                                   row, row_max);
+        } else {
+            b_ret = baseModel ()->removeRow (row);
+            if (b_ret) {
+                //emit modelAboutToBeReset ();
+                //emit modelReset ();
+                regroup ();
+            }
+        }
+    }
+    return b_ret;
 }
 /* ========================================================================= */
 
@@ -541,6 +657,33 @@ void GroupModel::addLabels (
 
 /* ------------------------------------------------------------------------- */
 /**
+ * @param item Indicates the item using its zero-based index.
+ * @param pos Indicates which labels is requested (0 - main label).
+ */
+QString GroupModel::itemLabel (int item, int pos) const
+{
+    QString result;
+    for (;;) {
+        ModelId mid = label (pos);
+        if (!mid.isValid()) {
+            GROUPLISTWIDGET_DEBUGM(
+                        "Can't retrieve label for invalid position %d.\n",
+                        pos);
+            break;
+        }
+
+        result = baseModel()->index (
+                    item, mid.column())
+                .data (mid.role()).toString();
+
+        break;
+    }
+    return result;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+/**
  * The method asserts that there is a base model installed and that
  * the grouping column has a value inside valid range.
  */
@@ -762,6 +905,38 @@ void GroupModel::resetAllSubGroups ()
         subm->signalReset ();
     }
     GROUPLISTWIDGET_TRACE_EXIT;
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+ModelId GroupModel::label (int idx) const
+{
+    int idx_max = additional_labels_.length ();
+    if ((idx < 0) || (idx > additional_labels_.length ())) {
+        GROUPLISTWIDGET_DEBUGM(
+                    "Label index %d outside valid range [0; %d).\n",
+                    idx, idx_max);
+        return ModelId ();
+    } else {
+        return additional_labels_.at (idx);
+    }
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+void GroupModel::regroup ()
+{
+    if (!supress_signals_)
+        emit modelAboutToBeReset ();
+    clearAllGroups();
+    if (baseModel () != NULL) {
+        if (group_.column () != -1)
+            buildAllGroups ();
+        else
+            buildNoGroupingGroup ();
+    }
+    if (!supress_signals_)
+        emit modelReset ();
 }
 /* ========================================================================= */
 
