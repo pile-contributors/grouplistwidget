@@ -123,10 +123,6 @@ void GroupModel::setBaseModel (
         return;
     }
 
-    if (baseModel () != NULL) {
-        delete baseModel ();
-    }
-
     emit modelAboutToBeReset();
     supress_signals_ = true;
 
@@ -696,6 +692,11 @@ void GroupModel::buildAllGroups ()
     int i_max = baseModel ()->rowCount();
     int group_index = 0;
 
+#   define NEW_GROUP \
+    GroupSubModel * newm = new GroupSubModel ( \
+                this, iter_data, midx.data(group_label_role_).toString()); \
+    newm->appendRecord (i);
+
     // go through all records in the base model
     for (int i = 0; i < i_max; ++i) {
         QModelIndex midx = baseModel ()->index (i, group_.column ());
@@ -713,9 +714,7 @@ void GroupModel::buildAllGroups ()
                 b_found = true;
                 break; }
             case Smaller: {
-                GroupSubModel * newm = new GroupSubModel (
-                            this, iter_data, midx.data(group_.role ()).toString());
-                newm->appendRecord (i);
+                NEW_GROUP;
                 groups_.insert (group_index, newm);
                 b_found = true;
                 break; }
@@ -727,9 +726,7 @@ void GroupModel::buildAllGroups ()
             ++group_index;
         }
         if (!b_found) {
-            GroupSubModel * newm = new GroupSubModel (
-                        this, iter_data, midx.data(group_label_role_).toString());
-            newm->appendRecord (i);
+            NEW_GROUP;
             groups_.append (newm);
         }
     }

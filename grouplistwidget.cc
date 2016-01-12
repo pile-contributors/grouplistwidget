@@ -22,6 +22,9 @@
 #include <QStyledItemDelegate>
 #include <QFontMetrics>
 #include <QWheelEvent>
+#include <QPixmap>
+#include <QImage>
+#include <QPainter>
 
 
 #define GEN_SLOT_FUN "gsfunction"
@@ -65,7 +68,7 @@ class GrpTreeDeleg : public QStyledItemDelegate {
 public:
     QAbstractItemDelegate * prev_;
 
-    GrpTreeDeleg (QAbstractItemDelegate * prev, GroupListWidget *parent = NULL) :
+    GrpTreeDeleg (QAbstractItemDelegate * prev, GroupListWidget *parent) :
         QStyledItemDelegate (parent),
         prev_(prev)
     {
@@ -97,12 +100,61 @@ public:
         }
     }
 
-    void paint (QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+    void paint (
+            QPainter *painter, const QStyleOptionViewItem &option,
+            const QModelIndex &index) const
     {
-        if (prev_ != NULL) {
-            return prev_->paint (painter, option, index);
+        GroupListWidget * g = glw ();
+        if (g && !index.parent ().isValid()) {
+            /*bool selected =
+                    (option.state & QStyle::State_Selected) == QStyle::State_Selected;
+            if (selected) {
+                painter->setBrush (option.palette.brush (QPalette::Highlight));
+            } else {
+                painter->setBrush (QBrush (group_back_)); //(option.backgroundBrush);
+            }*/
+            painter->setBrush (QBrush (g->groupBackColor ()));
+            painter->setFont (option.font);
+            painter->setPen (Qt::NoPen);
+
+            painter->drawRect (option.rect);
+            painter->setPen (Qt::SolidLine);
+
+            QRect ricon = option.rect;
+            ricon.setSize (option.decorationSize);
+            QRect rtext = option.rect;
+
+            QIcon icn;
+            if (option.state & QStyle::State_Open) {
+                icn = g->iconExpanded ();
+            } else {
+                icn = g->iconCollapsed ();
+            }
+            if (!icn.isNull()) {
+                icn.paint (
+                            painter, ricon,
+                            option.decorationAlignment, QIcon::Normal);
+                rtext.translate (ricon.width(), 0);
+                rtext.setWidth (rtext.width() - ricon.width());
+            }
+
+            QRect text_out;
+            painter->drawText (
+                        rtext,
+                        Qt::AlignTop|Qt::AlignLeft,
+                        index.data (Qt::DisplayRole).toString(),
+                        &text_out);
+
+            int top_pos_l = text_out.top() + text_out.height() / 2 + 1;
+            painter->drawLine (
+                        QPoint (text_out.right () + ricon.width(), top_pos_l),
+                        QPoint (rtext.right () - ricon.width(), top_pos_l));
+
+            return;
+        } else if (prev_ != NULL) {
+            prev_->paint (painter, option, index);
         } else {
-            return QStyledItemDelegate::paint (painter, option, index);
+            QStyledItemDelegate::paint (painter, option, index);
         }
     }
 
@@ -144,13 +196,18 @@ GroupListWidget::GroupListWidget (QWidget *parent) :
     pixmap_size_(-1),
     list_delegate_(NULL),
     grid_cell_(),
-    current_row_(-1)
+    current_row_(-1),
+    icon_group_expanded_(),
+    icon_group_collapsed_(),
+    group_back_(179, 230, 255)
+
 {
     GROUPLISTWIDGET_TRACE_ENTRY;
     setItemDelegate (new GrpTreeDeleg(itemDelegate (), this));
     setHeaderHidden (true);
     setVerticalScrollMode (QAbstractItemView::ScrollPerPixel);
     installUnderModel (m_);
+    connect(this, &QTreeView::clicked, this, &GroupListWidget::itemClicked);
     if ((m_ != NULL) && (m_->groupCount() > 0))
         recreateFromGroup ();
     GROUPLISTWIDGET_TRACE_EXIT;
@@ -689,6 +746,20 @@ void GroupListWidget::genericSlot ()
                          s->property (GEN_SLOT_ARG).toInt ()));
     } else {
         Q_ASSERT(false);
+    }
+}
+/* ========================================================================= */
+
+/* ------------------------------------------------------------------------- */
+void GroupListWidget::itemClicked (const QModelIndex &item)
+{
+    for (;;) {
+        if (!item.isValid())
+            break;
+        if (item.parent().isValid())
+            break;
+        isExpanded (item)? collapse(item) : expand(item);
+        break;
     }
 }
 /* ========================================================================= */

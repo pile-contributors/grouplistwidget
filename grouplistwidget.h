@@ -13,6 +13,7 @@
 #include <grouplistwidget/grouplistwidget-config.h>
 #include <QTreeWidget>
 #include <QListView>
+#include <QIcon>
 
 QT_BEGIN_NAMESPACE
 class QAbstractItemModel;
@@ -140,6 +141,45 @@ public:
     setBlueItem (
             int value);
 
+    //! Change the icon shown to the left of text when the group is expanded.
+    void
+    setIconExpanded (
+            const QIcon & value) {
+        icon_group_expanded_ = value;
+    }
+
+    //! Icon shown to the left of text when the group is expanded.
+    const QIcon &
+    iconExpanded () {
+        return icon_group_expanded_;
+    }
+
+    //! Change the icon shown to the left of text when the group is collapsed.
+    void
+    setIconCollapsed (
+            const QIcon & value) {
+        icon_group_collapsed_ = value;
+    }
+
+    //! Icon shown to the left of text when the group is collapsed.
+    const QIcon &
+    iconCollapsed () {
+        return icon_group_collapsed_;
+    }
+
+    //! Change the color for group background.
+    void
+    setGroupBackColor (
+            const QColor & value) {
+        group_back_ = value;
+    }
+
+    //! The color for group background.
+    const QColor &
+    groupBackColor () {
+        return group_back_;
+    }
+
 
 
 public slots:
@@ -224,6 +264,11 @@ private slots:
     //! The actual function and parameters are extracted from sender properties.
     void
     genericSlot ();
+
+    //! An item in treeview has been clicked.
+    void
+    itemClicked (
+            const QModelIndex & item);
 
 protected:
 
@@ -340,7 +385,9 @@ public:
     QAbstractItemDelegate * list_delegate_; /**< the delegate used with lists */
     QSize grid_cell_; /**< the dimension for the grid cell */
     int current_row_; /**< The index of the current row */
-
+    QIcon icon_group_expanded_; /**< Icon shown to the left of text when the group is expanded. */
+    QIcon icon_group_collapsed_; /**< Icon shown to the left of text when the group is collapsed. */
+    QColor group_back_; /**< the color for group background */
 }; // GroupListWidget
 
 #endif // GUARD_GROUPLISTWIDGET_H_INCLUDE
