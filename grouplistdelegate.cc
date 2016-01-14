@@ -119,15 +119,15 @@ void GroupListDelegate::reinit (
         break;
     }
 
-    GROUPLISTWIDGET_DEBUGM("Reinitialized geometry to %d, %d\n",
+    GROUPLISTWIDGET_DEBUGV("Reinitialized geometry to %d, %d\n",
                            item_size_.width (), item_size_.height ());
-    GROUPLISTWIDGET_DEBUGM("- image pos (%d, %d), size (%d, %d)\n",
+    GROUPLISTWIDGET_DEBUGV("- image pos (%d, %d), size (%d, %d)\n",
                            pix_pos_.x (), pix_pos_.y(),
                            pix_pos_.width (), pix_pos_.height ());
-    GROUPLISTWIDGET_DEBUGM("- text pos (%d, %d), size (%d, %d)\n",
+    GROUPLISTWIDGET_DEBUGV("- text pos (%d, %d), size (%d, %d)\n",
                            text_pos_.x (), text_pos_.y(),
                            text_pos_.width (), text_pos_.height ());
-    GROUPLISTWIDGET_DEBUGM("- layout: %d, labels: %d\n",
+    GROUPLISTWIDGET_DEBUGV("- layout: %d, labels: %d\n",
                            layout_, lay_count_);
 
     GROUPLISTWIDGET_TRACE_EXIT;
