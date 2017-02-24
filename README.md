@@ -2,7 +2,7 @@ GroupListWidget
 ===============
 
 The pile attempts to provide a widget that is capable of presenting
-2D data in a list of (potentially grouped) entries.
+2D data in a list (1D) of (potentially grouped) entries.
 
 The user is expected to install a base model that provides all the data.
 Internally, a number of models will be dynamically derived to serve the data
@@ -27,7 +27,8 @@ and sets the base model:
 
 This already provides the user with the ability to sort items
 and group them. A default contextual menu is installed that allows
-these operations along with others and the user is assisted in
+these operations (sorting, grouping) along with others
+and the user is assisted in
 building of customized contextual menus via `appendToMenu()`.
 
 GroupModel
@@ -76,7 +77,7 @@ Sorting can be ascending or descending as set by
 `setSortingColumn(-1)` (this is the default). Each of these
 setter methods have associated getter methods.
 
-Qt Signals are used to communicate changes in the state of the
+Qt signals are used to communicate changes in the state of the
 model to the views. `GroupModel` uses
 `modelAboutToBeReset()` and `modelReset()` to communicate with
 `GroupListWidget` and `GroupSubModel` uses `modelAboutToBeReset()`
